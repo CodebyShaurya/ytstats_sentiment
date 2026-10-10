@@ -50,16 +50,30 @@
 }
 
 .logoImg {
-  height: 48px;
-  width: auto;
-  max-width: 190px;
-  object-fit: contain;
+  height: 42px;
+  width: 42px;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgba(26, 61, 26, 0.12);
+  border: 1.5px solid white;
+}
+
+.logoText {
+  font-family: var(--font-serif-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--primary-dark);
+  letter-spacing: -0.01em;
 }
 
 @media (max-width: 768px) {
   .logoImg {
-    height: 32px;
-    max-width: 120px;
+    height: 34px;
+    width: 34px;
+    border-radius: 10px;
+  }
+  .logoText {
+    font-size: 17px;
   }
 }
 
@@ -1089,6 +1103,186 @@
 
 .limitationsCard {
   border-left: 4px solid var(--accent-orange);
+}
+
+/* ================= LACKING TOPICS & RELATED VIDEOS ================= */
+.lackingTopicsSection {
+  margin-top: 0.5rem;
+}
+
+.topicList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.topicCard {
+  background: #fbfdfb;
+  border: 1px solid rgba(26, 61, 26, 0.08);
+  border-radius: 18px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.topicCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(26, 61, 26, 0.06);
+}
+
+.topicHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.topicTitleBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--primary-dark);
+}
+
+.topicTag {
+  font-size: 11px;
+  font-weight: 700;
+  background: #fff3ec;
+  color: var(--accent-orange);
+  border: 1px solid rgba(232, 106, 16, 0.25);
+  padding: 3px 10px;
+  border-radius: 9999px;
+  text-transform: uppercase;
+}
+
+.topicReason {
+  font-size: 13.5px;
+  color: #506350;
+  line-height: 1.55;
+}
+
+.topicVideoRecommendation {
+  margin-top: 0.25rem;
+  background: white;
+  border: 1px solid rgba(26, 61, 26, 0.1);
+  border-radius: 14px;
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.recommendationLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary-dark);
+}
+
+.videoPillLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+  background: var(--primary-dark);
+  text-decoration: none;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.videoPillLink:hover {
+  background: var(--hover-green);
+  transform: translateY(-1px);
+}
+
+/* Related Videos Grid */
+.relatedVideosGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.relatedVideoCard {
+  background: #fbfdfb;
+  border: 1px solid rgba(26, 61, 26, 0.08);
+  border-radius: 18px;
+  padding: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s ease;
+}
+
+.relatedVideoCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(26, 61, 26, 0.07);
+  border-color: rgba(232, 106, 16, 0.3);
+}
+
+.relatedVideoHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.relatedVideoIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #f0f7f1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-orange);
+  flex-shrink: 0;
+}
+
+.relatedVideoTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--primary-dark);
+  line-height: 1.4;
+}
+
+.relatedVideoFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 8px;
+  border-top: 1px solid rgba(26, 61, 26, 0.06);
+}
+
+.relatedVideoChannel {
+  font-size: 12px;
+  color: #607260;
+  font-weight: 500;
+}
+
+.relatedVideoWatch {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent-orange);
 }
 
 /* Footer */

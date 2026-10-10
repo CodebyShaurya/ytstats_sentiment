@@ -27,7 +27,35 @@ export async function GET(request) {
 
     clearTimeout(timeoutId);
 
-    const data = await response.json();
+    const contentType = response.headers.get("content-type") || "";
+    let data;
+
+    if (contentType.includes("application/json")) {
+      data = await response.json();
+    } else {
+      const rawText = await response.text();
+      data = parseBackendTextOutput(rawText);
+    }
+
+    // Ensure data.analysis exists if top-level properties are directly at root
+    if (data && !data.analysis && (data.overall_rating !== undefined || data.sentiment)) {
+      data = {
+        analysis: {
+          overall_rating: data.overall_rating,
+          rating_explanation: data.rating_explanation,
+          sentiment: data.sentiment,
+          title_match: data.title_match,
+          description_match: data.description_match,
+          engagement_assessment: data.engagement_assessment,
+          general_consensus: data.general_consensus,
+          limitations: data.limitations,
+          lacking_topics: data.lacking_topics || [],
+          comments_analyzed: data.comments_analyzed,
+        },
+        related_videos: data.related_videos || [],
+        lacking_topic_videos: data.lacking_topic_videos || [],
+      };
+    }
 
     return new Response(JSON.stringify(data), {
       status: response.status,
@@ -46,3 +74,62 @@ export async function GET(request) {
     );
   }
 }
+
+// ===== Helper: Parse Backend Raw Text Output =====
+function parseBackendTextOutput(rawText) {
+  if (!rawText) return null;
+
+  let analysis = null;
+  const related_videos = [];
+  const lacking_topic_videos = [];
+
+  // 1. Extract JSON block from GEMINI ANALYSIS section
+  const jsonMatch = rawText.match(/\{[\s\S]*?\n\}/);
+  if (jsonMatch) {
+    try {
+      analysis = JSON.parse(jsonMatch[0]);
+    } catch (e) {
+      console.error("Failed to parse JSON analysis block:", e);
+    }
+  }
+
+  // 2. Extract RELATED VIDEOS section
+  const relatedSectionMatch = rawText.match(/RELATED VIDEOS[\s\S]*?(?===+|$)/i);
+  if (relatedSectionMatch) {
+    const relatedText = relatedSectionMatch[0];
+    const itemRegex = /\d+\.\s+([^\n\r]+)[\r\n]+\s*Channel:\s*([^\n\r]+)[\r\n]+\s*Link:\s*([^\n\r\s]+)/gi;
+    let match;
+    while ((match = itemRegex.exec(relatedText)) !== null) {
+      related_videos.push({
+        title: match[1].trim(),
+        channel: match[2].trim(),
+        url: match[3].trim(),
+      });
+    }
+  }
+
+  // 3. Extract VIDEOS FOR LACKING TOPICS section
+  const lackingSectionMatch = rawText.match(/VIDEOS FOR LACKING TOPICS[\s\S]*?(?===+|$)/i);
+  if (lackingSectionMatch) {
+    const lackingText = lackingSectionMatch[0];
+    const topicBlockRegex = /Topic:\s*([^\n\r]+)[\r\n]+\s*Reason:\s*([^\n\r]+)[\r\n]+\s*Suggestion:\s*([^\n\r]+)[\r\n]+\s*Link:\s*([^\n\r\s]+)/gi;
+    let match;
+    while ((match = topicBlockRegex.exec(lackingText)) !== null) {
+      lacking_topic_videos.push({
+        topic: match[1].trim(),
+        reason: match[2].trim(),
+        video: {
+          title: match[3].trim(),
+          url: match[4].trim(),
+        },
+      });
+    }
+  }
+
+  return {
+    analysis,
+    related_videos,
+    lacking_topic_videos,
+  };
+}
+

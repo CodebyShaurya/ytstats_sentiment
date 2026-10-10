@@ -8,7 +8,7 @@ const API_BASE = "/api/youtube";
 
 // External Assets specified in Prompt
 const ASSETS = {
-  logo: "https://polo-pecan-73837341.figma.site/_assets/v11/0ae29d6d9628bede667f90d57bebe81b8f1ec2bf.svg",
+  logo: "/logo.png",
   avatar: "https://polo-pecan-73837341.figma.site/_assets/v11/e62173d41f91350a59628e8a9a55ae078a886fb9.png?w=128",
   bottomLeft: "https://polo-pecan-73837341.figma.site/_assets/v11/8d44b25186ef45a5789c74668fb781cea4e1ff49.png",
   bottomCenter: "https://polo-pecan-73837341.figma.site/_assets/v11/96745c4e72ad5c5208e53a885df797fd82cd854a.png?h=1024",
@@ -80,6 +80,8 @@ function SentimentDashboardInner() {
   }
 
   const analysis = data?.analysis;
+  const relatedVideos = data?.related_videos;
+  const lackingTopicVideos = data?.lacking_topic_videos;
   const embedVideoId = extractYouTubeVideoId(activeVideoUrl || ytUrl);
 
   // Render the search card with input, slider, and analyze button
@@ -215,6 +217,7 @@ function SentimentDashboardInner() {
               e.currentTarget.style.display = "none";
             }}
           />
+          <span className={styles.logoText}>YT Sentiment</span>
         </div>
 
         {/* Sticky Search Bar when user has performed a search */}
@@ -602,6 +605,126 @@ function SentimentDashboardInner() {
                     </h3>
                     <p className={styles.cardText}>{analysis.limitations}</p>
                   </div>
+
+                  {/* Lacking Topics & Gap Fill Videos */}
+                  {((analysis.lacking_topics && analysis.lacking_topics.length > 0) ||
+                    (lackingTopicVideos && lackingTopicVideos.length > 0)) && (
+                    <div className={`${styles.card} ${styles.lackingTopicsSection}`}>
+                      <h3 className={styles.cardTitle}>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <circle cx="12" cy="12" r="10" />
+                          <line x1="12" y1="8" x2="12" y2="12" />
+                          <line x1="12" y1="16" x2="12.01" y2="16" />
+                        </svg>
+                        Identified Content Gaps & Recommended Fillers
+                      </h3>
+                      <p className={styles.cardText}>
+                        Topics viewers felt were missing, incomplete, or unexplained in this video, along with recommended resources to fill the gap.
+                      </p>
+
+                      <div className={styles.topicList}>
+                        {/* If lacking_topic_videos is provided, render each with its linked video */}
+                        {lackingTopicVideos && lackingTopicVideos.length > 0 ? (
+                          lackingTopicVideos.map((item, idx) => (
+                            <div key={idx} className={styles.topicCard}>
+                              <div className={styles.topicHeader}>
+                                <div className={styles.topicTitleBadge}>
+                                  <span>📌</span>
+                                  <span>{item.topic}</span>
+                                </div>
+                                <span className={styles.topicTag}>Missing Detail</span>
+                              </div>
+                              <p className={styles.topicReason}>{item.reason}</p>
+                              {(item.video?.url || item.link) && (
+                                <div className={styles.topicVideoRecommendation}>
+                                  <div className={styles.recommendationLabel}>
+                                    <span>📺</span>
+                                    <span>
+                                      Suggested: <strong>{item.video?.title || item.suggestion || "Video Resource"}</strong>
+                                    </span>
+                                  </div>
+                                  <a
+                                    href={item.video?.url || item.link}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className={styles.videoPillLink}
+                                  >
+                                    <span>Watch Video</span>
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                      <line x1="7" y1="17" x2="17" y2="7" />
+                                      <polyline points="7 7 17 7 17 17" />
+                                    </svg>
+                                  </a>
+                                </div>
+                              )}
+                            </div>
+                          ))
+                        ) : (
+                          // Fallback to analysis.lacking_topics if lacking_topic_videos is not present
+                          analysis.lacking_topics?.map((item, idx) => (
+                            <div key={idx} className={styles.topicCard}>
+                              <div className={styles.topicHeader}>
+                                <div className={styles.topicTitleBadge}>
+                                  <span>📌</span>
+                                  <span>{item.topic}</span>
+                                </div>
+                                <span className={styles.topicTag}>Topic Gap</span>
+                              </div>
+                              <p className={styles.topicReason}>{item.reason}</p>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Related Videos */}
+                  {relatedVideos && relatedVideos.length > 0 && (
+                    <div className={`${styles.card} ${styles.lackingTopicsSection}`}>
+                      <h3 className={styles.cardTitle}>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <polygon points="5 3 19 12 5 21 5 3" />
+                        </svg>
+                        Related Videos to Explore
+                      </h3>
+                      <p className={styles.cardText}>
+                        Videos exploring similar subjects or alternative perspectives on this topic.
+                      </p>
+
+                      <div className={styles.relatedVideosGrid}>
+                        {relatedVideos.map((video, idx) => (
+                          <a
+                            key={idx}
+                            href={video.url || video.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={styles.relatedVideoCard}
+                          >
+                            <div className={styles.relatedVideoHeader}>
+                              <div className={styles.relatedVideoIcon}>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                  <polygon points="5 3 19 12 5 21 5 3" />
+                                </svg>
+                              </div>
+                              <div className={styles.relatedVideoTitle}>{video.title}</div>
+                            </div>
+                            <div className={styles.relatedVideoFooter}>
+                              <span className={styles.relatedVideoChannel}>
+                                {video.channel || "YouTube"}
+                              </span>
+                              <span className={styles.relatedVideoWatch}>
+                                <span>Watch</span>
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                  <line x1="7" y1="17" x2="17" y2="7" />
+                                  <polyline points="7 7 17 7 17 17" />
+                                </svg>
+                              </span>
+                            </div>
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </>
               )}
             </main>
