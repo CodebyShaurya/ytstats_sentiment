@@ -266,42 +266,20 @@ function SentimentDashboardInner() {
           <div className={`${styles.bottomImgCol} ${styles.bottomLeftCol} animate-photo-reveal delay-700`}>
             <img src={ASSETS.bottomLeft} alt="Pet item left" className={styles.heroBottomImg} />
             {!hasSearched && (
-              <div className={`${styles.overlayBottomLeft} animate-fade-up delay-1000`}>
-                <span className={styles.statLarge}>98K+</span>
-                <div className={styles.avatarStack}>
-                  <img src={ASSETS.avatar} alt="User" className={styles.stackedAvatar} />
-                  <div className={styles.plusCircle}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                      <line x1="12" y1="5" x2="12" y2="19" />
-                      <line x1="5" y1="12" x2="19" y2="12" />
-                    </svg>
-                  </div>
-                </div>
+              <div >
+
               </div>
             )}
           </div>
 
           {/* Center Column Image (Tallest) */}
           <div className={`${styles.bottomImgCol} ${styles.bottomCenterCol} animate-photo-reveal delay-600`}>
-            <img src={ASSETS.bottomCenter} alt="Pet item center" className={styles.heroBottomImg} />
-            {!hasSearched && (
-              <div className={`${styles.overlayBottomCenter} animate-fade-up delay-1100`}>
-                <div className={styles.bottomCenterText}>Best Products for Your Pet</div>
-              </div>
-            )}
+
           </div>
 
           {/* Right Column Image */}
           <div className={`${styles.bottomImgCol} ${styles.bottomRightCol} animate-photo-reveal delay-800`}>
-            <img src={ASSETS.bottomRight} alt="Pet item right" className={styles.heroBottomImg} />
-            {!hasSearched && (
-              <div className={`${styles.overlayBottomRight} animate-fade-up delay-1200`}>
-                <span className={styles.ratingLarge}>4.6</span>
-                <svg width="20" height="20" viewBox="0 0 24 24" className={styles.starFilled}>
-                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                </svg>
-              </div>
-            )}
+
           </div>
         </div>
       </section>
@@ -609,74 +587,74 @@ function SentimentDashboardInner() {
                   {/* Lacking Topics & Gap Fill Videos */}
                   {((analysis.lacking_topics && analysis.lacking_topics.length > 0) ||
                     (lackingTopicVideos && lackingTopicVideos.length > 0)) && (
-                    <div className={`${styles.card} ${styles.lackingTopicsSection}`}>
-                      <h3 className={styles.cardTitle}>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <circle cx="12" cy="12" r="10" />
-                          <line x1="12" y1="8" x2="12" y2="12" />
-                          <line x1="12" y1="16" x2="12.01" y2="16" />
-                        </svg>
-                        Identified Content Gaps & Recommended Fillers
-                      </h3>
-                      <p className={styles.cardText}>
-                        Topics viewers felt were missing, incomplete, or unexplained in this video, along with recommended resources to fill the gap.
-                      </p>
+                      <div className={`${styles.card} ${styles.lackingTopicsSection}`}>
+                        <h3 className={styles.cardTitle}>
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="8" x2="12" y2="12" />
+                            <line x1="12" y1="16" x2="12.01" y2="16" />
+                          </svg>
+                          Identified Content Gaps & Recommended Fillers
+                        </h3>
+                        <p className={styles.cardText}>
+                          Topics viewers felt were missing, incomplete, or unexplained in this video, along with recommended resources to fill the gap.
+                        </p>
 
-                      <div className={styles.topicList}>
-                        {/* If lacking_topic_videos is provided, render each with its linked video */}
-                        {lackingTopicVideos && lackingTopicVideos.length > 0 ? (
-                          lackingTopicVideos.map((item, idx) => (
-                            <div key={idx} className={styles.topicCard}>
-                              <div className={styles.topicHeader}>
-                                <div className={styles.topicTitleBadge}>
-                                  <span>📌</span>
-                                  <span>{item.topic}</span>
-                                </div>
-                                <span className={styles.topicTag}>Missing Detail</span>
-                              </div>
-                              <p className={styles.topicReason}>{item.reason}</p>
-                              {(item.video?.url || item.link) && (
-                                <div className={styles.topicVideoRecommendation}>
-                                  <div className={styles.recommendationLabel}>
-                                    <span>📺</span>
-                                    <span>
-                                      Suggested: <strong>{item.video?.title || item.suggestion || "Video Resource"}</strong>
-                                    </span>
+                        <div className={styles.topicList}>
+                          {/* If lacking_topic_videos is provided, render each with its linked video */}
+                          {lackingTopicVideos && lackingTopicVideos.length > 0 ? (
+                            lackingTopicVideos.map((item, idx) => (
+                              <div key={idx} className={styles.topicCard}>
+                                <div className={styles.topicHeader}>
+                                  <div className={styles.topicTitleBadge}>
+                                    <span>📌</span>
+                                    <span>{item.topic}</span>
                                   </div>
-                                  <a
-                                    href={item.video?.url || item.link}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className={styles.videoPillLink}
-                                  >
-                                    <span>Watch Video</span>
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                      <line x1="7" y1="17" x2="17" y2="7" />
-                                      <polyline points="7 7 17 7 17 17" />
-                                    </svg>
-                                  </a>
+                                  <span className={styles.topicTag}>Missing Detail</span>
                                 </div>
-                              )}
-                            </div>
-                          ))
-                        ) : (
-                          // Fallback to analysis.lacking_topics if lacking_topic_videos is not present
-                          analysis.lacking_topics?.map((item, idx) => (
-                            <div key={idx} className={styles.topicCard}>
-                              <div className={styles.topicHeader}>
-                                <div className={styles.topicTitleBadge}>
-                                  <span>📌</span>
-                                  <span>{item.topic}</span>
-                                </div>
-                                <span className={styles.topicTag}>Topic Gap</span>
+                                <p className={styles.topicReason}>{item.reason}</p>
+                                {(item.video?.url || item.link) && (
+                                  <div className={styles.topicVideoRecommendation}>
+                                    <div className={styles.recommendationLabel}>
+                                      <span>📺</span>
+                                      <span>
+                                        Suggested: <strong>{item.video?.title || item.suggestion || "Video Resource"}</strong>
+                                      </span>
+                                    </div>
+                                    <a
+                                      href={item.video?.url || item.link}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className={styles.videoPillLink}
+                                    >
+                                      <span>Watch Video</span>
+                                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                        <line x1="7" y1="17" x2="17" y2="7" />
+                                        <polyline points="7 7 17 7 17 17" />
+                                      </svg>
+                                    </a>
+                                  </div>
+                                )}
                               </div>
-                              <p className={styles.topicReason}>{item.reason}</p>
-                            </div>
-                          ))
-                        )}
+                            ))
+                          ) : (
+                            // Fallback to analysis.lacking_topics if lacking_topic_videos is not present
+                            analysis.lacking_topics?.map((item, idx) => (
+                              <div key={idx} className={styles.topicCard}>
+                                <div className={styles.topicHeader}>
+                                  <div className={styles.topicTitleBadge}>
+                                    <span>📌</span>
+                                    <span>{item.topic}</span>
+                                  </div>
+                                  <span className={styles.topicTag}>Topic Gap</span>
+                                </div>
+                                <p className={styles.topicReason}>{item.reason}</p>
+                              </div>
+                            ))
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
 
                   {/* Related Videos */}
                   {relatedVideos && relatedVideos.length > 0 && (
