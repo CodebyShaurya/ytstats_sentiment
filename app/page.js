@@ -135,7 +135,7 @@ function SentimentDashboardInner() {
             </>
           ) : (
             <>
-              <span>Analyze</span>
+              <span className='text-md md:text-xl'  >Analyze</span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <line x1="5" y1="12" x2="19" y2="12" />
                 <polyline points="12 5 19 12 12 19" />
@@ -161,7 +161,7 @@ function SentimentDashboardInner() {
               aria-label="Analysis depth slider"
             />
           </div>
-          <span className={styles.sliderBadge}>
+          <span className={`md:block hidden ` + styles.sliderBadge}>
             {sliderVal === 1 ? " Fast (~50)" : sliderVal === 2 ? " Balanced (~200)" : " Deep (~500)"}
           </span>
         </div>
@@ -265,20 +265,24 @@ function SentimentDashboardInner() {
           {/* Left Column Image */}
           <div className={`${styles.bottomImgCol} ${styles.bottomLeftCol} animate-photo-reveal delay-700`}>
             <img src={ASSETS.bottomLeft} alt="Pet item left" className={styles.heroBottomImg} />
-            {!hasSearched && (
-              <div >
 
-              </div>
-            )}
           </div>
 
           {/* Center Column Image (Tallest) */}
           <div className={`${styles.bottomImgCol} ${styles.bottomCenterCol} animate-photo-reveal delay-600`}>
+            <img src={ASSETS.bottomCenter} alt="Pet item center" className={styles.heroBottomImg} />
+            {!hasSearched && (
+              <div className={`${styles.overlayBottomCenter} animate-fade-up delay-1100`}>
+                {/* <div className={styles.bottomCenterText}>Best Products for Your Pet</div> */}
+              </div>
+            )}
 
           </div>
 
           {/* Right Column Image */}
           <div className={`${styles.bottomImgCol} ${styles.bottomRightCol} animate-photo-reveal delay-800`}>
+            <img src={ASSETS.bottomRight} alt="Pet item right" className={styles.heroBottomImg} />
+
 
           </div>
         </div>
