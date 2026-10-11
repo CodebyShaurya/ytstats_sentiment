@@ -1,3 +1,20 @@
+export const maxDuration = 60; // Allow up to 60s execution duration on Vercel
+
+const BACKEND_BASE = (
+  process.env.BACKEND_URL || "https://ytstats-backend.onrender.com"
+).replace(/\/+$/, "");
+
+export async function OPTIONS() {
+  return new Response(null, {
+    status: 204,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    },
+  });
+}
+
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const yturl = searchParams.get("yturl");
@@ -6,19 +23,21 @@ export async function GET(request) {
   if (!yturl) {
     return new Response(JSON.stringify({ error: "Missing yturl parameter" }), {
       status: 400,
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
     });
   }
 
   try {
-    // Call backend directly using 127.0.0.1 to avoid Windows IPv6 localhost DNS issues
-    const backendUrl = `http://127.0.0.1:5000/api/youtube?yturl=${encodeURIComponent(
+    const backendUrl = `${BACKEND_BASE}/api/youtube?yturl=${encodeURIComponent(
       yturl
     )}&accuracy=${encodeURIComponent(accuracy)}`;
 
-    // Allow long-running analysis (up to 2 minutes for comment scraping and LLM processing)
+    // Allow long-running analysis (up to 55s before Vercel 60s function timeout)
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 120000);
+    const timeoutId = setTimeout(() => controller.abort(), 55000);
 
     const response = await fetch(backendUrl, {
       signal: controller.signal,
@@ -59,17 +78,26 @@ export async function GET(request) {
 
     return new Response(JSON.stringify(data), {
       status: response.status,
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
     });
   } catch (error) {
     console.error("API route proxy error:", error);
+    const isTimeout = error.name === "AbortError";
     return new Response(
       JSON.stringify({
-        error: error.name === "AbortError" ? "Request timed out" : error.message || "Failed to fetch from backend",
+        error: isTimeout
+          ? "Request timed out while waiting for backend analysis. Please try again."
+          : error.message || "Failed to fetch from backend",
       }),
       {
-        status: 502,
-        headers: { "Content-Type": "application/json" },
+        status: isTimeout ? 504 : 502,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
       }
     );
   }
