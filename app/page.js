@@ -328,15 +328,15 @@ function SentimentDashboardInner() {
           <div className={styles.heroCenterText}>
             <h1 className={styles.heroHeading}>
               <span className="animate-word-pop delay-200">
-                {mode === "creator" ? "Grow" : "Everything"}
+                {mode === "creator" ? "Grow" : "Understand"}
               </span>{" "}
               <span className={styles.wordSpacing} />
               <br />
               <span className="animate-word-pop delay-400">
-                {mode === "creator" ? "With" : "Your"}
+                {mode === "creator" ? "With" : "The"}
               </span>{" "}
               <span className="animate-word-pop delay-500">
-                {mode === "creator" ? "Audience" : "Users"}
+                {mode === "creator" ? "Audience" : "Video"}
               </span>{" "}
               <span className="animate-word-pop delay-600">
                 {mode === "creator" ? "Insights" : "Feel"}
@@ -449,12 +449,10 @@ function SentimentDashboardInner() {
                     style={{
                       background: mascot.bgColor,
                       color: mascot.themeColor,
-                      border: `1px solid ${mascot.borderColor}`,
+                      border: `solid ${mascot.borderColor}`,
                     }}
                   >
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                    </svg>
+
                     <span>{mascot.badge}</span>
                   </div>
 
@@ -501,6 +499,25 @@ function SentimentDashboardInner() {
                       ? "Aggregated audience satisfaction score"
                       : "Aggregated quality score from viewers"}
                   </div>
+
+                  {/* Mascot Photo in Overall Rating Placeholder */}
+                  {mascot && (
+                    <div className={styles.placeholderMascotRow}>
+                      <img
+                        src={mascot.src}
+                        alt={mascot.name}
+                        className={styles.placeholderMascotThumb}
+                        onError={(e) => {
+                          if (mascot.fallbackUrl && e.currentTarget.src !== mascot.fallbackUrl) {
+                            e.currentTarget.src = mascot.fallbackUrl;
+                          }
+                        }}
+                      />
+                      <span className={styles.placeholderMascotTag} style={{ color: mascot.themeColor }}>
+                        {mascot.name} • {mascot.badge}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 {/* 2. Viewer Sentiment / Sentiment Bias (Second) */}
@@ -599,26 +616,43 @@ function SentimentDashboardInner() {
                   <div className={styles.topRow}>
                     {/* Overall Rating Card */}
                     <div className={styles.card}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.85rem" }}>
                         <h3 className={styles.cardTitle}>
                           {mode === "creator" ? "Audience Retention Score" : "Overall Rating"}
                         </h3>
-                        {mascot && (
-                          <span
-                            style={{
-                              fontSize: "12px",
-                              fontWeight: 700,
-                              color: mascot.themeColor,
-                              background: mascot.bgColor,
-                              padding: "3px 10px",
-                              borderRadius: "9999px",
-                              border: `1px solid ${mascot.borderColor}`,
-                            }}
-                          >
-                            Ambassador: {mascot.name}
-                          </span>
-                        )}
                       </div>
+
+                      {/* Mascot Photo Showcase Expressing the Emotion */}
+                      {mascot && (
+                        <div className={styles.ratingMascotHero}>
+                          <div className={styles.ratingMascotImgWrap}>
+                            <img
+                              src={mascot.src}
+                              alt={`${mascot.name} - ${mascot.title}`}
+                              className={styles.ratingMascotImg}
+                              onError={(e) => {
+                                if (mascot.fallbackUrl && e.currentTarget.src !== mascot.fallbackUrl) {
+                                  e.currentTarget.src = mascot.fallbackUrl;
+                                }
+                              }}
+                            />
+                          </div>
+                          <div className={styles.ratingMascotInfo}>
+                            <span
+                              className={styles.ratingMascotBadge}
+                              style={{
+                                background: mascot.bgColor,
+                                color: mascot.themeColor,
+                                border: `1px solid ${mascot.borderColor}`,
+                              }}
+                            >
+                              {mascot.badge}
+                            </span>
+                            <div className={styles.ratingMascotName}>{mascot.name}</div>
+                            <div className={styles.ratingMascotTitle}>{mascot.title}</div>
+                          </div>
+                        </div>
+                      )}
 
                       <div className={styles.ratingCardInner}>
                         <div className={styles.ratingRingWrapper}>
