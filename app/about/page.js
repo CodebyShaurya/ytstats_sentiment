@@ -45,6 +45,77 @@ export default function AboutPage() {
           </p>
         </section>
 
+        {/* ================= MEET THE DEVELOPERS (FIRST SECTION) ================= */}
+        <section className={styles.developersSection}>
+          <div className={styles.sectionHeader}>
+
+            <h2 className={styles.sectionTitle}>Meet The Developers</h2>
+            <p className={styles.sectionDesc}>
+              The engineering minds behind YT Sentiment Analyzer — building transparent AI tools to bridge the gap between content creators and authentic viewer communities.
+            </p>
+          </div>
+
+          <div className={styles.developersGrid}>
+            {/* Developer 1: Shaurya Gupta */}
+            <div className={styles.devCard}>
+              <div className={styles.devAvatarWrap}>
+                <img
+                  src="https://avatars.githubusercontent.com/u/123228383?v=4"
+                  alt="Shaurya Gupta"
+                  className={styles.devAvatar}
+                />
+              </div>
+              <h3 className={styles.devName}>Shaurya Gupta</h3>
+              <div className={styles.devHandle}>@CodebyShaurya</div>
+              <span className={styles.devRoleBadge}>Lead Developer</span>
+              <p className={styles.devBio}>
+                Full-stack developer and AI enthusiast. Passionate about AI integrations, natural language processing, scalable backend architectures, and modern web applications.
+              </p>
+
+              <a
+                href="https://github.com/CodebyShaurya"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.githubBtn}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+                </svg>
+                <span>GitHub Profile</span>
+              </a>
+            </div>
+
+            {/* Developer 2: Khushi Sharma */}
+            <div className={styles.devCard}>
+              <div className={styles.devAvatarWrap}>
+                <img
+                  src="https://avatars.githubusercontent.com/u/114425377?v=4"
+                  alt="Khushi Sharma"
+                  className={styles.devAvatar}
+                />
+              </div>
+              <h3 className={styles.devName}>Khushi Sharma</h3>
+              <div className={styles.devHandle}>@Khushi14404</div>
+              <span className={styles.devRoleBadge}>AI Architect</span>
+              <p className={styles.devBio}>
+                Passionate and detail-oriented developer who enjoys building full-stack applications with a focus on responsive web design, modern UI aesthetics, interactive data visualization, and intuitive user experiences.
+              </p>
+
+              <a
+                href="https://github.com/Khushi14404"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.githubBtn}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+                </svg>
+                <span>GitHub Profile</span>
+              </a>
+            </div>
+          </div>
+        </section>
+
         {/* Mascot Ambassador Showcase */}
         <section className={styles.ambassadorSection}>
           <div className={styles.sectionHeader}>

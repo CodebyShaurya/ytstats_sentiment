@@ -55,6 +55,154 @@
   line-height: 1.6;
 }
 
+/* Developers Section (First in About) */
+.developersSection {
+  margin-bottom: 4.5rem;
+}
+
+.developersGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  max-width: 920px;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .developersGrid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+.devCard {
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 2.25rem 2rem;
+  border: 1px solid rgba(26, 61, 26, 0.09);
+  box-shadow: 0 16px 36px rgba(26, 61, 26, 0.06);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.devCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 24px 48px rgba(26, 61, 26, 0.1);
+}
+
+.devAvatarWrap {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  padding: 4px;
+  background: linear-gradient(135deg, var(--accent-orange), var(--primary-dark));
+  box-shadow: 0 8px 24px rgba(26, 61, 26, 0.14);
+  margin-bottom: 1.25rem;
+  position: relative;
+}
+
+.devAvatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  background: white;
+  border: 3px solid white;
+}
+
+.devName {
+  font-family: var(--font-serif-display);
+  font-size: 25px;
+  font-weight: 700;
+  color: var(--primary-dark);
+  margin-bottom: 0.2rem;
+}
+
+.devHandle {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #556e55;
+  margin-bottom: 0.6rem;
+}
+
+.devRoleBadge {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 9999px;
+  font-size: 11.5px;
+  font-weight: 700;
+  background: #eef8ef;
+  color: var(--primary-dark);
+  border: 1px solid rgba(26, 61, 26, 0.12);
+  margin-bottom: 1rem;
+}
+
+.devBio {
+  font-size: 14px;
+  color: #4b604b;
+  line-height: 1.55;
+  margin-bottom: 1.25rem;
+  flex-grow: 1;
+}
+
+.devStats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--bg-mint);
+  border-radius: 16px;
+  margin-bottom: 1.25rem;
+  border: 1px solid rgba(26, 61, 26, 0.08);
+}
+
+.devStatItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.devStatVal {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--primary-dark);
+}
+
+.devStatLabel {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #6a7c6a;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.githubBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: 9999px;
+  background: var(--primary-dark);
+  color: #ffffff;
+  font-size: 13.5px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 14px rgba(26, 61, 26, 0.18);
+}
+
+.githubBtn:hover {
+  background: var(--hover-green);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(26, 61, 26, 0.26);
+}
+
 /* Mascot Ambassador Showcase Section */
 .ambassadorSection {
   margin-bottom: 4.5rem;
