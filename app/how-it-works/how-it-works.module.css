@@ -1,0 +1,311 @@
+.pageContainer {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-mint);
+  color: var(--primary-dark);
+}
+
+.mainContent {
+  flex: 1;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 5rem;
+}
+
+/* Hero */
+.heroSection {
+  text-align: center;
+  margin-bottom: 4rem;
+  animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.heroTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  background: #ffffff;
+  border: 1px solid rgba(26, 61, 26, 0.1);
+  color: var(--accent-orange);
+  font-size: 12.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 4px 12px rgba(26, 61, 26, 0.04);
+}
+
+.heroHeading {
+  font-family: var(--font-serif-display);
+  font-size: clamp(36px, 5.5vw, 68px);
+  color: var(--primary-dark);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin-bottom: 1.25rem;
+}
+
+.heroSubtitle {
+  font-size: clamp(16px, 1.2vw, 19px);
+  color: #3b503b;
+  max-width: 720px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Step-by-Step Pipeline */
+.pipelineSection {
+  margin-bottom: 4.5rem;
+}
+
+.pipelineList {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  position: relative;
+}
+
+.stepCard {
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 2.5rem;
+  border: 1px solid rgba(26, 61, 26, 0.08);
+  box-shadow: 0 16px 36px rgba(26, 61, 26, 0.05);
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 2rem;
+  align-items: flex-start;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+@media (max-width: 768px) {
+  .stepCard {
+    grid-template-columns: 1fr;
+    padding: 1.75rem;
+    gap: 1.25rem;
+  }
+}
+
+.stepCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 44px rgba(26, 61, 26, 0.09);
+}
+
+.stepBadge {
+  width: 70px;
+  height: 70px;
+  border-radius: 22px;
+  background: var(--bg-mint);
+  border: 1.5px solid rgba(26, 61, 26, 0.12);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stepNum {
+  font-family: var(--font-serif-display);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--primary-dark);
+  line-height: 1;
+}
+
+.stepLabel {
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--accent-orange);
+  margin-top: 2px;
+}
+
+.stepBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.stepTitle {
+  font-family: var(--font-serif-display);
+  font-size: 24px;
+  color: var(--primary-dark);
+}
+
+.stepText {
+  font-size: 15px;
+  color: #4b604b;
+  line-height: 1.6;
+}
+
+.stepHighlights {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 0.5rem;
+}
+
+.highlightPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-mint);
+  border: 1px solid rgba(26, 61, 26, 0.08);
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--primary-dark);
+}
+
+/* Mascot Section in Pipeline */
+.mascotStepGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+@media (max-width: 860px) {
+  .mascotStepGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mascotStepCard {
+  background: var(--bg-mint);
+  border-radius: 18px;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid rgba(26, 61, 26, 0.08);
+}
+
+.mascotStepImg {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.mascotStepInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.mascotStepTitle {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--primary-dark);
+}
+
+.mascotStepRange {
+  font-size: 11.5px;
+  color: #5a6e5a;
+}
+
+/* FAQ Section */
+.faqSection {
+  background: #ffffff;
+  border-radius: 32px;
+  padding: 3.5rem 3rem;
+  border: 1px solid rgba(26, 61, 26, 0.08);
+  box-shadow: 0 20px 48px rgba(26, 61, 26, 0.06);
+  margin-bottom: 4.5rem;
+}
+
+@media (max-width: 768px) {
+  .faqSection {
+    padding: 2rem 1.5rem;
+  }
+}
+
+.faqTitle {
+  font-family: var(--font-serif-display);
+  font-size: clamp(28px, 3.5vw, 42px);
+  color: var(--primary-dark);
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.faqGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+@media (max-width: 860px) {
+  .faqGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.faqItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.faqQuestion {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--primary-dark);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.faqAnswer {
+  font-size: 14.5px;
+  color: #4b604b;
+  line-height: 1.6;
+}
+
+/* CTA */
+.ctaSection {
+  text-align: center;
+  background: var(--primary-dark);
+  color: #ffffff;
+  border-radius: 32px;
+  padding: 3.5rem 2rem;
+  box-shadow: 0 24px 60px rgba(26, 61, 26, 0.25);
+}
+
+.ctaHeading {
+  font-family: var(--font-serif-display);
+  font-size: clamp(32px, 4vw, 48px);
+  margin-bottom: 1rem;
+}
+
+.ctaSubtitle {
+  font-size: 16px;
+  color: #d1ded1;
+  max-width: 600px;
+  margin: 0 auto 2rem;
+  line-height: 1.55;
+}
+
+.ctaBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--accent-orange);
+  color: #ffffff;
+  padding: 14px 32px;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 16px;
+  text-decoration: none;
+  box-shadow: 0 8px 24px rgba(232, 106, 16, 0.35);
+  transition: all 0.25s ease;
+}
+
+.ctaBtn:hover {
+  background: #d45e0d;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(232, 106, 16, 0.45);
+}

@@ -11,9 +11,8 @@ export async function GET(request) {
   }
 
   try {
-    // Use backend URL from environment variable, fallback to localhost for local development
-    const backendBase = (process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "https://ytstats-backend.onrender.com").replace(/\/+$/, "");
-    const backendUrl = `${backendBase}/api/youtube?yturl=${encodeURIComponent(
+    // Call backend directly using 127.0.0.1 to avoid Windows IPv6 localhost DNS issues
+    const backendUrl = `http://127.0.0.1:5000/api/youtube?yturl=${encodeURIComponent(
       yturl
     )}&accuracy=${encodeURIComponent(accuracy)}`;
 

@@ -9,7 +9,7 @@
   background-color: var(--bg-mint);
   color: var(--primary-dark);
   position: relative;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 /* ================= HEADER ================= */
@@ -541,18 +541,35 @@
   }
 }
 
-/* Left Sidebar Sticky */
+/* Left Sidebar Fixed / Sticky */
 .sidebarSticky {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
   position: sticky;
-  top: 90px;
+  top: 86px;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(26, 61, 26, 0.2) transparent;
+}
+
+.sidebarSticky::-webkit-scrollbar {
+  width: 5px;
+}
+
+.sidebarSticky::-webkit-scrollbar-thumb {
+  background: rgba(26, 61, 26, 0.18);
+  border-radius: 9999px;
 }
 
 @media (max-width: 960px) {
   .sidebarSticky {
     position: static;
+    max-height: none;
+    overflow-y: visible;
   }
 }
 
@@ -623,19 +640,103 @@
   border: none;
 }
 
-/* 4 Placeholders in Sidebar */
+/* Brand Ambassador Dog Mascot Card in Left Sidebar */
+.mascotSidebarCard {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 1.5rem 1.25rem;
+  border: 1px solid rgba(26, 61, 26, 0.1);
+  box-shadow: 0 16px 36px rgba(26, 61, 26, 0.07);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.mascotSidebarImgWrapper {
+  width: 100%;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.75rem;
+  position: relative;
+}
+
+.mascotSidebarImg {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 14px 20px rgba(0, 0, 0, 0.14));
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: floatPup 4s ease-in-out infinite;
+}
+
+@keyframes floatPup {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.mascotSidebarBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  margin-bottom: 6px;
+}
+
+.mascotSidebarTitle {
+  font-family: var(--font-serif-display);
+  font-size: 21px;
+  font-weight: 700;
+  color: var(--primary-dark);
+  margin-bottom: 2px;
+}
+
+.mascotSidebarSubtitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: #556e55;
+  margin-bottom: 8px;
+}
+
+.mascotSidebarFeedback {
+  font-size: 13.5px;
+  color: #384d38;
+  line-height: 1.5;
+  background: var(--bg-mint);
+  border-radius: 14px;
+  padding: 10px 14px;
+  width: 100%;
+  border: 1px solid rgba(26, 61, 26, 0.08);
+  text-align: left;
+}
+
+/* 4 Metrics in Sidebar with Increased Font Sizes */
 .placeholdersGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
 }
 
 .placeholderCard {
   background: white;
-  border-radius: 18px;
-  padding: 1rem 0.9rem;
-  border: 1px solid rgba(26, 61, 26, 0.08);
-  box-shadow: 0 8px 20px rgba(26, 61, 26, 0.04);
+  border-radius: 20px;
+  padding: 1.15rem 1.25rem;
+  border: 1px solid rgba(26, 61, 26, 0.09);
+  box-shadow: 0 8px 24px rgba(26, 61, 26, 0.05);
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -644,31 +745,79 @@
 
 .placeholderCard:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 28px rgba(26, 61, 26, 0.07);
+  box-shadow: 0 14px 32px rgba(26, 61, 26, 0.09);
 }
 
-.placeholderIcon {
-  font-size: 20px;
-  margin-bottom: 2px;
+.placeholderHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
 }
 
 .placeholderTitle {
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--primary-dark);
+  letter-spacing: -0.01em;
+}
+
+.placeholderOrderBadge {
+  font-size: 10px;
+  font-weight: 800;
+  color: #6a7c6a;
+  background: #f1f7f1;
+  padding: 2px 7px;
+  border-radius: 6px;
 }
 
 .placeholderValue {
-  font-size: 18px;
+  font-size: 30px;
   font-weight: 800;
   color: var(--accent-orange);
   font-family: var(--font-serif-display);
+  line-height: 1.1;
+  margin: 3px 0;
 }
 
 .placeholderDesc {
+  font-size: 13px;
+  color: #556b55;
+  line-height: 1.4;
+}
+
+/* Quota Alert Banner */
+.quotaBanner {
+  max-width: 780px;
+  margin: 0 auto 1.5rem;
+  background: #fff5ee;
+  border: 1.5px solid #f97316;
+  color: #9a3412;
+  padding: 12px 18px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 14px;
+  box-shadow: 0 8px 24px rgba(234, 88, 12, 0.08);
+  animation: fadeUp 0.3s ease both;
+}
+
+.quotaPillBadge {
+  display: inline-block;
   font-size: 11px;
-  color: #6a7c6a;
-  line-height: 1.35;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 9999px;
+  margin-left: 6px;
+  background: #ffedd5;
+  color: #c2410c;
+}
+
+.quotaPillExhausted {
+  background: #fee2e2;
+  color: #b91c1c;
 }
 
 /* Right Content: Detailed Breakdown */

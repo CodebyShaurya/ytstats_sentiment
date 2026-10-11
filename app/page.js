@@ -2,17 +2,29 @@
 
 import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import { getDogMascot } from "@/lib/mascot";
+import {
+  getAllRemainingQuotas,
+  canSearch,
+  recordSearchUsage,
+  DAILY_LIMITS,
+} from "@/lib/quota";
 import styles from "./page.module.css";
 
 const API_BASE = "/api/youtube";
 
-// External Assets specified in Prompt
+// Brand Ambassador Assets
 const ASSETS = {
   logo: "/logo.png",
-  avatar: "https://polo-pecan-73837341.figma.site/_assets/v11/e62173d41f91350a59628e8a9a55ae078a886fb9.png?w=128",
+  // avatar: "https://polo-pecan-73837341.figma.site/_assets/v11/e62173d41f91350a59628e8a9a55ae078a886fb9.png?w=128",
   bottomLeft: "https://polo-pecan-73837341.figma.site/_assets/v11/8d44b25186ef45a5789c74668fb781cea4e1ff49.png",
   bottomCenter: "https://polo-pecan-73837341.figma.site/_assets/v11/96745c4e72ad5c5208e53a885df797fd82cd854a.png?h=1024",
   bottomRight: "https://polo-pecan-73837341.figma.site/_assets/v11/81bd2e7a66b58f3d8f3ad78fd1ebf01af8dfdee1.png",
+
+
 };
 
 // Helper: Extract YouTube Video ID for iframe embedding
@@ -31,16 +43,40 @@ function SentimentDashboardInner() {
   const [sliderVal, setSliderVal] = useState(2);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [quotaAlert, setQuotaAlert] = useState(null);
   const [data, setData] = useState(null);
   const [hasSearched, setHasSearched] = useState(false);
   const [animateResults, setAnimateResults] = useState(false);
+  const [mode, setMode] = useState("watcher"); // "watcher" or "creator"
+  const [quotas, setQuotas] = useState({ fast: 3, balanced: 2, deep: 1 });
   const resultsRef = useRef(null);
 
-  // Map slider value (1, 2, 3) to accuracy string
+  // Map slider value (1, 2, 3) to accuracy string and quota key
   const accuracyLevels = ["low", "medium", "high"];
   const accuracy = accuracyLevels[sliderVal - 1] || "medium";
+  const currentModeKey = sliderVal === 1 ? "fast" : sliderVal === 2 ? "balanced" : "deep";
 
-  // Check for URL params from extension
+  // Load saved mode and daily quotas from localStorage on client mount
+  useEffect(() => {
+    try {
+      const savedMode = localStorage.getItem("yt_sentiment_user_mode");
+      if (savedMode === "creator" || savedMode === "watcher") {
+        setMode(savedMode);
+      }
+      setQuotas(getAllRemainingQuotas());
+    } catch (e) {
+      console.error(e);
+    }
+  }, []);
+
+  const handleModeChange = (newMode) => {
+    setMode(newMode);
+    try {
+      localStorage.setItem("yt_sentiment_user_mode", newMode);
+    } catch (e) { }
+  };
+
+  // Check for URL params from browser extension or query
   useEffect(() => {
     const urlParam = searchParams.get("yturl");
     if (urlParam) {
@@ -53,8 +89,20 @@ function SentimentDashboardInner() {
     const url = (overrideUrl || ytUrl).trim();
     if (!url) return;
 
+    // Check daily search quota for the selected depth
+    if (!canSearch(currentModeKey)) {
+      const modeName = currentModeKey.charAt(0).toUpperCase() + currentModeKey.slice(1);
+      const limit = DAILY_LIMITS[currentModeKey];
+      setQuotaAlert(
+        `Daily limit reached for ${modeName} search (${limit}/${limit} used today). Quotas reset at midnight. You have ${quotas[currentModeKey === "fast" ? "balanced" : "fast"]
+        } searches available in other modes.`
+      );
+      return;
+    }
+
     setLoading(true);
     setError(null);
+    setQuotaAlert(null);
     setAnimateResults(false);
     setHasSearched(true);
     setActiveVideoUrl(url);
@@ -67,6 +115,11 @@ function SentimentDashboardInner() {
         throw new Error(json?.error || json?.message || `Server error: ${res.status}`);
       }
       if (!json?.analysis) throw new Error("Invalid response from server");
+
+      // Record successful search in localStorage
+      const updatedQuotas = recordSearchUsage(currentModeKey);
+      if (updatedQuotas) setQuotas(updatedQuotas);
+
       setData(json);
       setTimeout(() => {
         setAnimateResults(true);
@@ -84,7 +137,10 @@ function SentimentDashboardInner() {
   const lackingTopicVideos = data?.lacking_topic_videos;
   const embedVideoId = extractYouTubeVideoId(activeVideoUrl || ytUrl);
 
-  // Render the search card with input, slider, and analyze button
+  // Compute Brand Ambassador Dog Mascot based on overall rating and sentiment
+  const mascot = analysis ? getDogMascot(analysis.overall_rating, analysis.sentiment) : null;
+
+  // Render the search card with input, slider, accuracy quotas, and analyze button
   const renderSearchCard = (isCompact = false) => (
     <div className={`${styles.searchCardWrapper} ${isCompact ? styles.searchCardCompact : ""}`}>
       {/* Row 1: URL Input and Analyze Button */}
@@ -104,7 +160,11 @@ function SentimentDashboardInner() {
 
         <input
           type="text"
-          placeholder="Paste YouTube Video URL (e.g. https://www.youtube.com/watch?v=...)"
+          placeholder={
+            mode === "creator"
+              ? "Paste your YouTube Video URL to analyze audience response..."
+              : "Paste YouTube Video URL to check viewer consensus..."
+          }
           className={styles.searchInput}
           value={ytUrl}
           onChange={(e) => setYtUrl(e.target.value)}
@@ -126,7 +186,8 @@ function SentimentDashboardInner() {
         <button
           className={styles.analyzeBtn}
           onClick={() => handleAnalyze()}
-          disabled={loading || !ytUrl.trim()}
+          disabled={loading || !ytUrl.trim() || !canSearch(currentModeKey)}
+          title={!canSearch(currentModeKey) ? "Daily quota exhausted for this mode" : "Analyze video"}
         >
           {loading ? (
             <>
@@ -135,7 +196,7 @@ function SentimentDashboardInner() {
             </>
           ) : (
             <>
-              <span className='text-md md:text-xl'  >Analyze</span>
+              <span className="text-md md:text-xl">Analyze</span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <line x1="5" y1="12" x2="19" y2="12" />
                 <polyline points="12 5 19 12 12 19" />
@@ -145,7 +206,7 @@ function SentimentDashboardInner() {
         </button>
       </div>
 
-      {/* Row 2: Analysis Accuracy Slider */}
+      {/* Row 2: Analysis Accuracy Slider & Daily Quota Badges */}
       <div className={styles.searchControlsRow}>
         <div className={styles.sliderGroup}>
           <span className={styles.sliderLabel}>Analysis Depth:</span>
@@ -156,38 +217,72 @@ function SentimentDashboardInner() {
               max="3"
               step="1"
               value={sliderVal}
-              onChange={(e) => setSliderVal(parseInt(e.target.value, 10))}
+              onChange={(e) => {
+                setSliderVal(parseInt(e.target.value, 10));
+                setQuotaAlert(null);
+              }}
               className={styles.sliderInput}
               aria-label="Analysis depth slider"
             />
           </div>
           <span className={`md:block hidden ` + styles.sliderBadge}>
-            {sliderVal === 1 ? " Fast (~50)" : sliderVal === 2 ? " Balanced (~200)" : " Deep (~500)"}
+            {sliderVal === 1
+              ? `Fast (~50) • ${quotas.fast}/3 today`
+              : sliderVal === 2
+                ? `Balanced (~200) • ${quotas.balanced}/2 today`
+                : `Deep (~500) • ${quotas.deep}/1 today`}
           </span>
         </div>
 
-        {/* Quick Segmented Switch */}
+        {/* Segmented Depth Switch with Quota Counters */}
         <div className={styles.accuracySegmented}>
           <button
             type="button"
             className={`${styles.segmentBtn} ${sliderVal === 1 ? styles.segmentBtnActive : ""}`}
-            onClick={() => setSliderVal(1)}
+            onClick={() => {
+              setSliderVal(1);
+              setQuotaAlert(null);
+            }}
           >
-            Fast
+            <span>Fast</span>
+            <span
+              className={`${styles.quotaPillBadge} ${quotas.fast === 0 ? styles.quotaPillExhausted : ""}`}
+              title={`${quotas.fast} of 3 fast searches left today`}
+            >
+              {quotas.fast}/3
+            </span>
           </button>
           <button
             type="button"
             className={`${styles.segmentBtn} ${sliderVal === 2 ? styles.segmentBtnActive : ""}`}
-            onClick={() => setSliderVal(2)}
+            onClick={() => {
+              setSliderVal(2);
+              setQuotaAlert(null);
+            }}
           >
-            Balanced
+            <span>Balanced</span>
+            <span
+              className={`${styles.quotaPillBadge} ${quotas.balanced === 0 ? styles.quotaPillExhausted : ""}`}
+              title={`${quotas.balanced} of 2 balanced searches left today`}
+            >
+              {quotas.balanced}/2
+            </span>
           </button>
           <button
             type="button"
             className={`${styles.segmentBtn} ${sliderVal === 3 ? styles.segmentBtnActive : ""}`}
-            onClick={() => setSliderVal(3)}
+            onClick={() => {
+              setSliderVal(3);
+              setQuotaAlert(null);
+            }}
           >
-            Deep
+            <span>Deep</span>
+            <span
+              className={`${styles.quotaPillBadge} ${quotas.deep === 0 ? styles.quotaPillExhausted : ""}`}
+              title={`${quotas.deep} of 1 deep search left today`}
+            >
+              {quotas.deep}/1
+            </span>
           </button>
         </div>
       </div>
@@ -196,94 +291,81 @@ function SentimentDashboardInner() {
 
   return (
     <div className={styles.container}>
-      {/* ================= HEADER ================= */}
-      <header className={`${styles.header} ${hasSearched ? styles.headerSearched : ""}`}>
-        {/* Left Brand Logo */}
-        <div
-          className={styles.logoContainer}
-          onClick={() => {
-            if (hasSearched) {
-              setHasSearched(false);
-              setData(null);
-            }
-          }}
-          title="Reset to home"
-        >
-          <img
-            src={ASSETS.logo}
-            alt="Logo"
-            className={styles.logoImg}
-            onError={(e) => {
-              e.currentTarget.style.display = "none";
-            }}
-          />
-          <span className={styles.logoText}>YT Sentiment</span>
-        </div>
+      {/* ================= REUSABLE NAVIGATION ================= */}
+      <Navbar
+        mode={mode}
+        onModeChange={handleModeChange}
+        hasSearched={hasSearched}
+        onResetSearch={() => {
+          setHasSearched(false);
+          setData(null);
+          setError(null);
+          setQuotaAlert(null);
+        }}
+        renderSearchCompact={() => renderSearchCard(true)}
+      />
 
-        {/* Sticky Search Bar when user has performed a search */}
-        {hasSearched && (
-          <div className={styles.topHeaderSearchWrapper}>
-            {renderSearchCard(true)}
+      {/* Quota Limit Notice */}
+      {quotaAlert && (
+        <div className={styles.quotaBanner}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            <span>{quotaAlert}</span>
           </div>
-        )}
-
-        {/* Right Action Icons & Avatar */}
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <img src={ASSETS.avatar} alt="User Avatar" style={{ width: 36, height: 36, borderRadius: "50%", border: "2px solid white" }} />
+          <button className={styles.errorDismiss} onClick={() => setQuotaAlert(null)}>
+            ✕
+          </button>
         </div>
-      </header>
+      )}
 
       {/* ================= HERO SECTION ================= */}
       <section className={`${styles.heroSection} ${hasSearched ? styles.heroSectionSearched : ""}`}>
-        {/* Center Text Layer: REMOVED when searched, as requested */}
         {!hasSearched && (
           <div className={styles.heroCenterText}>
             <h1 className={styles.heroHeading}>
-              <span className="animate-word-pop delay-200">Everything</span>{" "}
+              <span className="animate-word-pop delay-200">
+                {mode === "creator" ? "Grow" : "Everything"}
+              </span>{" "}
               <span className={styles.wordSpacing} />
               <br />
-              <span className="animate-word-pop delay-400">Your</span>{" "}
-              <span className="animate-word-pop delay-500">Users</span>{" "}
-              <span className="animate-word-pop delay-600">Feel</span>
+              <span className="animate-word-pop delay-400">
+                {mode === "creator" ? "With" : "Your"}
+              </span>{" "}
+              <span className="animate-word-pop delay-500">
+                {mode === "creator" ? "Audience" : "Users"}
+              </span>{" "}
+              <span className="animate-word-pop delay-600">
+                {mode === "creator" ? "Insights" : "Feel"}
+              </span>
             </h1>
 
             <p className={`${styles.heroSubtitle} animate-fade-up delay-600`}>
-              AI-powered YouTube video sentiment analyzer and viewer emotion breakdown.
-              Explore authentic reviews, feedback, and audience reactions instantly.
+              {mode === "creator"
+                ? "AI-powered YouTube audience feedback & retention audit. Pinpoint audience pain points, uncover missing topics for your next video, and maximize engagement."
+                : "AI-powered YouTube video sentiment analyzer and viewer emotion breakdown. Explore authentic reviews, feedback, and audience reactions instantly."}
             </p>
 
-            {/* Main Hero Search Card with Slider */}
+            {/* Main Hero Search Card */}
             {renderSearchCard(false)}
           </div>
         )}
 
-        {/* Bottom 3 Images Section: BLURRED when searched, as requested */}
-        <div
-          className={`${styles.bottomImagesContainer} ${hasSearched ? styles.bottomImagesBlurred : ""
-            }`}
-        >
-          {/* Left Column Image */}
+        {/* Bottom 3 Images Section */}
+        <div className={`${styles.bottomImagesContainer} ${hasSearched ? styles.bottomImagesBlurred : ""}`}>
           <div className={`${styles.bottomImgCol} ${styles.bottomLeftCol} animate-photo-reveal delay-700`}>
             <img src={ASSETS.bottomLeft} alt="Pet item left" className={styles.heroBottomImg} />
-
           </div>
 
-          {/* Center Column Image (Tallest) */}
           <div className={`${styles.bottomImgCol} ${styles.bottomCenterCol} animate-photo-reveal delay-600`}>
             <img src={ASSETS.bottomCenter} alt="Pet item center" className={styles.heroBottomImg} />
-            {!hasSearched && (
-              <div className={`${styles.overlayBottomCenter} animate-fade-up delay-1100`}>
-                {/* <div className={styles.bottomCenterText}>Best Products for Your Pet</div> */}
-              </div>
-            )}
-
           </div>
 
-          {/* Right Column Image */}
           <div className={`${styles.bottomImgCol} ${styles.bottomRightCol} animate-photo-reveal delay-800`}>
             <img src={ASSETS.bottomRight} alt="Pet item right" className={styles.heroBottomImg} />
-
-
           </div>
         </div>
       </section>
@@ -299,7 +381,9 @@ function SentimentDashboardInner() {
             </svg>
             <span>{error}</span>
           </div>
-          <button className={styles.errorDismiss} onClick={() => setError(null)}>✕</button>
+          <button className={styles.errorDismiss} onClick={() => setError(null)}>
+            ✕
+          </button>
         </div>
       )}
 
@@ -314,11 +398,11 @@ function SentimentDashboardInner() {
         </div>
       )}
 
-      {/* ================= RESULTS: SIDEBAR (VIDEO + 4 PLACEHOLDERS) & RIGHT BREAKDOWN ================= */}
+      {/* ================= RESULTS: FIXED LEFT SIDEBAR & SCROLLING BREAKDOWN ================= */}
       {hasSearched && (
         <section className={styles.resultsSectionFull} ref={resultsRef}>
           <div className={styles.dashboardLayout}>
-            {/* LEFT SIDEBAR: Embedded YouTube Video + 4 Placeholders */}
+            {/* LEFT SIDEBAR: Embedded Video + Big Dog Brand Ambassador + 4 Re-ordered Metrics */}
             <aside className={styles.sidebarSticky}>
               {/* YouTube Video Embedded */}
               {embedVideoId && (
@@ -357,60 +441,144 @@ function SentimentDashboardInner() {
                 </div>
               )}
 
-              {/* 4 Placeholders in Sidebar */}
-              <div className='flex flex-col gap-y-3'>
+              {/* BRAND AMBASSADOR DOG MASCOT CARD (BIG SIZE PHOTO EXPRESSING EMOTION) */}
+              {mascot && (
+                <div className={styles.mascotSidebarCard}>
+                  <div
+                    className={styles.mascotSidebarBadge}
+                    style={{
+                      background: mascot.bgColor,
+                      color: mascot.themeColor,
+                      border: `1px solid ${mascot.borderColor}`,
+                    }}
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    </svg>
+                    <span>{mascot.badge}</span>
+                  </div>
 
-                {/* Placeholder 1: Audience Engagement */}
+                  <div className={styles.mascotSidebarImgWrapper}>
+                    <img
+                      src={mascot.src}
+                      alt={`${mascot.name} - ${mascot.title}`}
+                      className={styles.mascotSidebarImg}
+                      onError={(e) => {
+                        if (mascot.fallbackUrl && e.currentTarget.src !== mascot.fallbackUrl) {
+                          e.currentTarget.src = mascot.fallbackUrl;
+                        }
+                      }}
+                    />
+                  </div>
+
+                  <h3 className={styles.mascotSidebarTitle}>{mascot.name}</h3>
+                  <div className={styles.mascotSidebarSubtitle}>{mascot.title}</div>
+
+                  <p className={styles.mascotSidebarFeedback}>
+                    {mode === "creator" ? mascot.creatorFeedback : mascot.watcherFeedback}
+                  </p>
+                </div>
+              )}
+
+              {/* 4 SIDEBAR PLACEHOLDERS: ORDER = Overall Rating -> Sentiment -> Relevance Index -> Audience Volume */}
+              <div className={styles.placeholdersGrid}>
+                {/* 1. Overall Rating (First) */}
                 <div className={styles.placeholderCard}>
-                  {/* <span className={styles.placeholderIcon}>💬</span> */}
-                  <div className={styles.placeholderTitle}>Audience Volume</div>
+                  <div className={styles.placeholderHeader}>
+                    <span className={styles.placeholderTitle}>
+                      {mode === "creator" ? "Content Quality Rating" : "Overall Rating"}
+                    </span>
+                    <span className={styles.placeholderOrderBadge}>1 of 4</span>
+                  </div>
+                  <div
+                    className={styles.placeholderValue}
+                    style={{ color: mascot?.themeColor || "var(--accent-orange)" }}
+                  >
+                    {analysis ? `${analysis.overall_rating} / 10` : "—"}
+                  </div>
+                  <div className={styles.placeholderDesc}>
+                    {mode === "creator"
+                      ? "Aggregated audience satisfaction score"
+                      : "Aggregated quality score from viewers"}
+                  </div>
+                </div>
+
+                {/* 2. Viewer Sentiment / Sentiment Bias (Second) */}
+                <div className={styles.placeholderCard}>
+                  <div className={styles.placeholderHeader}>
+                    <span className={styles.placeholderTitle}>
+                      {mode === "creator" ? "Audience Sentiment" : "Viewer Sentiment"}
+                    </span>
+                    <span className={styles.placeholderOrderBadge}>2 of 4</span>
+                  </div>
+                  <div
+                    className={styles.placeholderValue}
+                    style={{ color: mascot?.themeColor || "var(--accent-orange)" }}
+                  >
+                    {analysis ? analysis.sentiment?.toUpperCase() : "—"}
+                  </div>
+                  <div className={styles.placeholderDesc}>
+                    {mode === "creator"
+                      ? "Dominant emotional mood in comments"
+                      : "Dominant audience feedback polarity"}
+                  </div>
+                </div>
+
+                {/* 3. Relevance Index (Third) */}
+                <div className={styles.placeholderCard}>
+                  <div className={styles.placeholderHeader}>
+                    <span className={styles.placeholderTitle}>
+                      {mode === "creator" ? "Expectation Delivery" : "Relevance Index"}
+                    </span>
+                    <span className={styles.placeholderOrderBadge}>3 of 4</span>
+                  </div>
+                  <div className={styles.placeholderValue}>
+                    {analysis ? `${analysis.title_match?.score || 0} / 10` : "—"}
+                  </div>
+                  <div className={styles.placeholderDesc}>
+                    {mode === "creator"
+                      ? "Title promise delivery vs viewer expectations"
+                      : "Title claim accuracy vs actual viewer feedback"}
+                  </div>
+                </div>
+
+                {/* 4. Audience Volume (Fourth) */}
+                <div className={styles.placeholderCard}>
+                  <div className={styles.placeholderHeader}>
+                    <span className={styles.placeholderTitle}>
+                      {mode === "creator" ? "Audience Sample" : "Audience Volume"}
+                    </span>
+                    <span className={styles.placeholderOrderBadge}>4 of 4</span>
+                  </div>
                   <div className={styles.placeholderValue}>
                     {analysis ? `${analysis.comments_analyzed || data?.comments_analyzed || 0}` : "—"}
                   </div>
-                  <div className={styles.placeholderDesc}>Comments sampled across thread</div>
-                </div>
-
-                {/* Placeholder 2: Sentiment Polarity */}
-                <div className={styles.placeholderCard}>
-                  {/* <span className={styles.placeholderIcon}>🔥</span> */}
-                  <div className={styles.placeholderTitle}>Sentiment Bias</div>
-                  <div className={styles.placeholderValue}>
-                    {analysis ? `${getSentimentEmoji(analysis.sentiment)} ${analysis.sentiment}` : "—"}
+                  <div className={styles.placeholderDesc}>
+                    {mode === "creator"
+                      ? "Total viewer comments processed in sample"
+                      : "Comments sampled across thread"}
                   </div>
-                  <div className={styles.placeholderDesc}>Dominant audience sentiment</div>
-                </div>
-
-                {/* Placeholder 3: Title Relevance */}
-                <div className={styles.placeholderCard}>
-                  {/* <span className={styles.placeholderIcon}>🎯</span> */}
-                  <div className={styles.placeholderTitle}>Relevance Index</div>
-                  <div className={styles.placeholderValue}>
-                    {analysis ? `${analysis.title_match?.score || 0}/10` : "—"}
-                  </div>
-                  <div className={styles.placeholderDesc}>Title claim vs viewer opinion</div>
-                </div>
-
-                {/* Placeholder 4: Trust Score */}
-                <div className={styles.placeholderCard}>
-                  {/* <span className={styles.placeholderIcon}>⭐</span> */}
-                  <div className={styles.placeholderTitle}>Overall Rating</div>
-                  <div className={styles.placeholderValue}>
-                    {analysis ? `${analysis.overall_rating}/10` : "—"}
-                  </div>
-                  <div className={styles.placeholderDesc}>Aggregated quality score</div>
                 </div>
               </div>
             </aside>
 
-            {/* RIGHT COLUMN: Detailed Sentiment & Content Breakdown */}
+            {/* RIGHT COLUMN: Detailed Sentiment & Content Breakdown (Scrolls Freely) */}
             <main className={styles.breakdownContainer}>
               {analysis && !loading && (
                 <>
-                  {/* Quick Metrics Ribbon */}
-
-                  {/* Header Title */}
+                  {/* Header Title with Mode Perspective */}
                   <div className={styles.resultsHeader}>
-                    <h2 className={styles.resultsTitle}>Detailed Breakdown</h2>
+                    <div>
+                      <h2 className={styles.resultsTitle}>
+                        {mode === "creator" ? "Audience Feedback Diagnostics" : "Detailed Breakdown"}
+                      </h2>
+                      <span style={{ fontSize: "13px", color: "#556e55", fontWeight: 600 }}>
+                        {mode === "creator"
+                          ? "Creator Mode: Metrics tailored for retention, topic expansion, and content optimization"
+                          : "Watcher Mode: Metrics tailored for time-saving, clickbait detection, and quality validation"}
+                      </span>
+                    </div>
+
                     <div className={styles.resultsMeta}>
                       <span className={styles.metaBadge}>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -431,7 +599,27 @@ function SentimentDashboardInner() {
                   <div className={styles.topRow}>
                     {/* Overall Rating Card */}
                     <div className={styles.card}>
-                      <h3 className={styles.cardTitle}>Overall Rating</h3>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+                        <h3 className={styles.cardTitle}>
+                          {mode === "creator" ? "Audience Retention Score" : "Overall Rating"}
+                        </h3>
+                        {mascot && (
+                          <span
+                            style={{
+                              fontSize: "12px",
+                              fontWeight: 700,
+                              color: mascot.themeColor,
+                              background: mascot.bgColor,
+                              padding: "3px 10px",
+                              borderRadius: "9999px",
+                              border: `1px solid ${mascot.borderColor}`,
+                            }}
+                          >
+                            Ambassador: {mascot.name}
+                          </span>
+                        )}
+                      </div>
+
                       <div className={styles.ratingCardInner}>
                         <div className={styles.ratingRingWrapper}>
                           <svg className={styles.ratingRingSvg} viewBox="0 0 120 120">
@@ -460,9 +648,15 @@ function SentimentDashboardInner() {
 
                     {/* Viewer Sentiment Card */}
                     <div className={styles.card}>
-                      <h3 className={styles.cardTitle}>Viewer Sentiment</h3>
+                      <h3 className={styles.cardTitle}>
+                        {mode === "creator" ? "Emotional Breakdown" : "Viewer Sentiment"}
+                      </h3>
                       <div className={`${styles.sentimentPill} ${styles[`sentiment_${analysis.sentiment}`]}`}>
-                        <span>{getSentimentEmoji(analysis.sentiment)}</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                          <circle cx="12" cy="12" r="10" />
+                          <line x1="12" y1="8" x2="12" y2="12" />
+                          <line x1="12" y1="16" x2="12.01" y2="16" />
+                        </svg>
                         <span>{analysis.sentiment?.toUpperCase()}</span>
                       </div>
 
@@ -499,7 +693,7 @@ function SentimentDashboardInner() {
                         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                         <polyline points="22 4 12 14.01 9 11.01" />
                       </svg>
-                      Content Match Scores
+                      {mode === "creator" ? "Expectation & Packaging Alignment" : "Content Match Scores"}
                     </h3>
 
                     <div className={styles.scoresGrid}>
@@ -507,8 +701,15 @@ function SentimentDashboardInner() {
                       <div className={styles.scoreItem}>
                         <div className={styles.scoreHeader}>
                           <div className={styles.scoreInfo}>
-                            <span>📝</span>
-                            <span>Title Match</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                              <polyline points="14 2 14 8 20 8" />
+                              <line x1="16" y1="13" x2="8" y2="13" />
+                              <line x1="16" y1="17" x2="8" y2="17" />
+                            </svg>
+                            <span>
+                              {mode === "creator" ? "Title Promise Fulfillment" : "Title Match (Clickbait Check)"}
+                            </span>
                           </div>
                           <span className={styles.scoreValue}>{analysis.title_match.score} / 10</span>
                         </div>
@@ -528,8 +729,17 @@ function SentimentDashboardInner() {
                       <div className={styles.scoreItem}>
                         <div className={styles.scoreHeader}>
                           <div className={styles.scoreInfo}>
-                            <span>📄</span>
-                            <span>Description Match</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <line x1="8" y1="6" x2="21" y2="6" />
+                              <line x1="8" y1="12" x2="21" y2="12" />
+                              <line x1="8" y1="18" x2="21" y2="18" />
+                              <line x1="3" y1="6" x2="3.01" y2="6" />
+                              <line x1="3" y1="12" x2="3.01" y2="12" />
+                              <line x1="3" y1="18" x2="3.01" y2="18" />
+                            </svg>
+                            <span>
+                              {mode === "creator" ? "Description Alignment" : "Description Truthfulness"}
+                            </span>
                           </div>
                           <span className={styles.scoreValue}>{analysis.description_match.score} / 10</span>
                         </div>
@@ -555,7 +765,7 @@ function SentimentDashboardInner() {
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
                         </svg>
-                        Engagement Assessment
+                        {mode === "creator" ? "Audience Engagement Health" : "Viewer Discussion Vibe"}
                       </h3>
                       <p className={styles.cardText}>{analysis.engagement_assessment}</p>
                     </div>
@@ -569,7 +779,7 @@ function SentimentDashboardInner() {
                           <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
                           <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                         </svg>
-                        General Consensus
+                        {mode === "creator" ? "Core Audience Takeaways" : "General Community Consensus"}
                       </h3>
                       <p className={styles.cardText}>{analysis.general_consensus}</p>
                     </div>
@@ -583,7 +793,7 @@ function SentimentDashboardInner() {
                         <line x1="12" y1="9" x2="12" y2="13" />
                         <line x1="12" y1="17" x2="12.01" y2="17" />
                       </svg>
-                      Analysis Limitations
+                      Analysis Limitations & Confidence
                     </h3>
                     <p className={styles.cardText}>{analysis.limitations}</p>
                   </div>
@@ -598,29 +808,40 @@ function SentimentDashboardInner() {
                             <line x1="12" y1="8" x2="12" y2="12" />
                             <line x1="12" y1="16" x2="12.01" y2="16" />
                           </svg>
-                          Identified Content Gaps & Recommended Fillers
+                          {mode === "creator"
+                            ? "Content Opportunities For Your Next Video"
+                            : "Identified Content Gaps & Companion Videos"}
                         </h3>
                         <p className={styles.cardText}>
-                          Topics viewers felt were missing, incomplete, or unexplained in this video, along with recommended resources to fill the gap.
+                          {mode === "creator"
+                            ? "Topics your viewers asked for or felt were missing in this video — prime opportunities for your next upload!"
+                            : "Topics viewers felt were missing, incomplete, or unexplained, along with recommended companion videos to fill the gap."}
                         </p>
 
                         <div className={styles.topicList}>
-                          {/* If lacking_topic_videos is provided, render each with its linked video */}
                           {lackingTopicVideos && lackingTopicVideos.length > 0 ? (
                             lackingTopicVideos.map((item, idx) => (
                               <div key={idx} className={styles.topicCard}>
                                 <div className={styles.topicHeader}>
                                   <div className={styles.topicTitleBadge}>
-                                    <span>📌</span>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                                      <circle cx="12" cy="10" r="3" />
+                                    </svg>
                                     <span>{item.topic}</span>
                                   </div>
-                                  <span className={styles.topicTag}>Missing Detail</span>
+                                  <span className={styles.topicTag}>
+                                    {mode === "creator" ? "Viewer Demand" : "Missing Detail"}
+                                  </span>
                                 </div>
                                 <p className={styles.topicReason}>{item.reason}</p>
                                 {(item.video?.url || item.link) && (
                                   <div className={styles.topicVideoRecommendation}>
                                     <div className={styles.recommendationLabel}>
-                                      <span>📺</span>
+                                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <rect x="2" y="7" width="20" height="15" rx="2" ry="2" />
+                                        <polyline points="17 2 12 7 7 2" />
+                                      </svg>
                                       <span>
                                         Suggested: <strong>{item.video?.title || item.suggestion || "Video Resource"}</strong>
                                       </span>
@@ -642,12 +863,14 @@ function SentimentDashboardInner() {
                               </div>
                             ))
                           ) : (
-                            // Fallback to analysis.lacking_topics if lacking_topic_videos is not present
                             analysis.lacking_topics?.map((item, idx) => (
                               <div key={idx} className={styles.topicCard}>
                                 <div className={styles.topicHeader}>
                                   <div className={styles.topicTitleBadge}>
-                                    <span>📌</span>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                                      <circle cx="12" cy="10" r="3" />
+                                    </svg>
                                     <span>{item.topic}</span>
                                   </div>
                                   <span className={styles.topicTag}>Topic Gap</span>
@@ -667,10 +890,14 @@ function SentimentDashboardInner() {
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <polygon points="5 3 19 12 5 21 5 3" />
                         </svg>
-                        Related Videos to Explore
+                        {mode === "creator"
+                          ? "Competitor & Related Content Benchmarks"
+                          : "Related Videos to Explore"}
                       </h3>
                       <p className={styles.cardText}>
-                        Videos exploring similar subjects or alternative perspectives on this topic.
+                        {mode === "creator"
+                          ? "Videos covering similar topics or adjacent themes in this niche."
+                          : "Videos exploring similar subjects or alternative perspectives on this topic."}
                       </p>
 
                       <div className={styles.relatedVideosGrid}>
@@ -714,14 +941,8 @@ function SentimentDashboardInner() {
         </section>
       )}
 
-      {/* Footer */}
-      <footer className={styles.footer}>
-        <div className={styles.footerInner}>
-          <span>YT Sentiment Analyzer © 2026</span>
-          <span className={styles.footerDot}>•</span>
-          <span>AI-Powered Viewer Sentiment & Video Insights</span>
-        </div>
-      </footer>
+      {/* Reusable Footer */}
+      <Footer />
     </div>
   );
 }
@@ -734,12 +955,7 @@ export default function Home() {
   );
 }
 
-// ===== Helpers =====
-function getSentimentEmoji(sentiment) {
-  const map = { positive: "😊", negative: "😞", neutral: "😐", mixed: "🤔" };
-  return map[sentiment] || "📊";
-}
-
+// ===== Helpers (No Emojis, Pure Math / Color Coordinates) =====
 function getSentimentPosition(sentiment) {
   const map = { negative: 18, mixed: 45, neutral: 50, positive: 88 };
   return map[sentiment] || 50;

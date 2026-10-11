@@ -1,0 +1,169 @@
+.footer {
+  margin-top: auto;
+  background: #ffffff;
+  border-top: 1px solid rgba(26, 61, 26, 0.08);
+  padding: 3rem 1.5rem 2rem;
+  color: var(--primary-dark);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.brandRow {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1.6fr;
+  gap: 2.5rem;
+  margin-bottom: 2.5rem;
+}
+
+@media (max-width: 860px) {
+  .brandRow {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+.brandInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.brandLogo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logoImg {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.brandName {
+  font-family: var(--font-serif-display);
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--primary-dark);
+}
+
+.brandDesc {
+  font-size: 13.5px;
+  color: #4b604b;
+  line-height: 1.6;
+  max-width: 440px;
+}
+
+.linksCol {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.colHeading {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--primary-dark);
+  margin-bottom: 0.4rem;
+}
+
+.link {
+  font-size: 14px;
+  color: #4b604b;
+  text-decoration: none;
+  transition: color 0.2s;
+  width: fit-content;
+}
+
+.link:hover {
+  color: var(--accent-orange);
+}
+
+.ambassadorCol {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ambassadorPill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-mint);
+  border: 1px solid rgba(26, 61, 26, 0.08);
+  padding: 6px 12px;
+  border-radius: 12px;
+}
+
+.miniPup {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.ambassadorPill div {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.ambassadorPill strong {
+  font-size: 12px;
+  color: var(--primary-dark);
+}
+
+.ambassadorPill span {
+  font-size: 11px;
+  color: #5b705b;
+}
+
+.divider {
+  height: 1px;
+  background: rgba(26, 61, 26, 0.08);
+  margin-bottom: 1.5rem;
+}
+
+.bottomBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 13px;
+  color: #5b705b;
+}
+
+.copyright {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bullet {
+  color: #9cb09c;
+}
+
+.devCredits {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.devLink {
+  color: var(--primary-dark);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s;
+}
+
+.devLink:hover {
+  color: var(--accent-orange);
+}
