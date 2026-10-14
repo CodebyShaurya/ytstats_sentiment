@@ -18,7 +18,8 @@ export async function OPTIONS() {
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const yturl = searchParams.get("yturl");
-  const accuracy = searchParams.get("accuracy") || "low";
+  const accuracy = searchParams.get("accuracy") || "high";
+  const mode = searchParams.get("mode") || "watcher";
 
   if (!yturl) {
     return new Response(JSON.stringify({ error: "Missing yturl parameter" }), {
@@ -33,7 +34,7 @@ export async function GET(request) {
   try {
     const backendUrl = `${BACKEND_BASE}/api/youtube?yturl=${encodeURIComponent(
       yturl
-    )}&accuracy=${encodeURIComponent(accuracy)}`;
+    )}&accuracy=${encodeURIComponent(accuracy)}&mode=${encodeURIComponent(mode)}`;
 
     // Allow long-running analysis (up to 55s before Vercel 60s function timeout)
     const controller = new AbortController();
@@ -53,27 +54,47 @@ export async function GET(request) {
       data = await response.json();
     } else {
       const rawText = await response.text();
-      data = parseBackendTextOutput(rawText);
+      data = parseBackendTextOutput(rawText, mode);
     }
 
-    // Ensure data.analysis exists if top-level properties are directly at root
-    if (data && !data.analysis && (data.overall_rating !== undefined || data.sentiment)) {
-      data = {
-        analysis: {
-          overall_rating: data.overall_rating,
-          rating_explanation: data.rating_explanation,
-          sentiment: data.sentiment,
-          title_match: data.title_match,
-          description_match: data.description_match,
-          engagement_assessment: data.engagement_assessment,
-          general_consensus: data.general_consensus,
-          limitations: data.limitations,
-          lacking_topics: data.lacking_topics || [],
+    // Normalize response to ensure consistent top-level structure:
+    // { mode, analysis, comments_analyzed, related_videos, lacking_topic_videos, recommendation_errors }
+    if (data) {
+      if (!data.analysis && (data.overall_rating !== undefined || data.sentiment)) {
+        data = {
+          mode: data.mode || mode,
+          analysis: {
+            overall_rating: data.overall_rating,
+            rating_explanation: data.rating_explanation,
+            sentiment: data.sentiment,
+            title_match: data.title_match,
+            description_match: data.description_match,
+            engagement_assessment: data.engagement_assessment,
+            general_consensus: data.general_consensus,
+            limitations: data.limitations,
+            guidance: data.guidance,
+            lacking_topics: data.lacking_topics || [],
+            comments_analyzed: data.comments_analyzed,
+            mode_output: data.mode_output,
+          },
           comments_analyzed: data.comments_analyzed,
-        },
-        related_videos: data.related_videos || [],
-        lacking_topic_videos: data.lacking_topic_videos || [],
-      };
+          related_videos: data.related_videos || [],
+          lacking_topic_videos: data.lacking_topic_videos || [],
+          recommendation_errors: data.recommendation_errors || [],
+        };
+      } else if (data.analysis) {
+        data = {
+          mode: data.mode || data.analysis?.mode || mode,
+          analysis: data.analysis,
+          comments_analyzed:
+            data.comments_analyzed !== undefined
+              ? data.comments_analyzed
+              : data.analysis?.comments_analyzed,
+          related_videos: data.related_videos || [],
+          lacking_topic_videos: data.lacking_topic_videos || [],
+          recommendation_errors: data.recommendation_errors || [],
+        };
+      }
     }
 
     return new Response(JSON.stringify(data), {
@@ -104,7 +125,7 @@ export async function GET(request) {
 }
 
 // ===== Helper: Parse Backend Raw Text Output =====
-function parseBackendTextOutput(rawText) {
+function parseBackendTextOutput(rawText, defaultMode = "watcher") {
   if (!rawText) return null;
 
   let analysis = null;
@@ -155,9 +176,13 @@ function parseBackendTextOutput(rawText) {
   }
 
   return {
+    mode: analysis?.mode || defaultMode,
     analysis,
+    comments_analyzed: analysis?.comments_analyzed || 0,
     related_videos,
     lacking_topic_videos,
+    recommendation_errors: [],
   };
 }
+
 

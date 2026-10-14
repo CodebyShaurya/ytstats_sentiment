@@ -68,7 +68,7 @@ export default function Navbar({
 
       {/* Right: Mode Switcher & Mobile Links */}
       <div className={styles.rightGroup}>
-        {/* Dual Mode Switcher: Watcher vs Creator */}
+        {/* Tri-Mode Switcher: Watcher vs Learner vs Creator */}
         <div
           className={styles.modeSwitchWrapper}
           role="group"
@@ -93,6 +93,26 @@ export default function Navbar({
               <circle cx="12" cy="12" r="3" />
             </svg>
             <span>Watcher</span>
+          </button>
+          <button
+            type="button"
+            className={`${styles.modeBtn} ${mode === "learner" ? styles.modeBtnActive : ""}`}
+            onClick={() => onModeChange && onModeChange("learner")}
+            title="Learner mode: Extract key concepts, study takeaways, and learning score"
+          >
+            <svg
+              className={styles.modeIcon}
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+              <path d="M6 12v5c3 3 9 3 12 0v-5" />
+            </svg>
+            <span>Learner</span>
           </button>
           <button
             type="button"

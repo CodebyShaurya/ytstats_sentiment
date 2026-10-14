@@ -60,7 +60,7 @@ function SentimentDashboardInner() {
   useEffect(() => {
     try {
       const savedMode = localStorage.getItem("yt_sentiment_user_mode");
-      if (savedMode === "creator" || savedMode === "watcher") {
+      if (savedMode === "creator" || savedMode === "watcher" || savedMode === "learner") {
         setMode(savedMode);
       }
       setQuotas(getAllRemainingQuotas());
@@ -74,18 +74,28 @@ function SentimentDashboardInner() {
     try {
       localStorage.setItem("yt_sentiment_user_mode", newMode);
     } catch (e) { }
+
+    // If a video is already loaded, automatically re-analyze with the new mode
+    if (activeVideoUrl) {
+      handleAnalyze(activeVideoUrl, newMode);
+    }
   };
 
   // Check for URL params from browser extension or query
   useEffect(() => {
     const urlParam = searchParams.get("yturl");
+    const modeParam = searchParams.get("mode");
+    if (modeParam && ["learner", "watcher", "creator"].includes(modeParam)) {
+      setMode(modeParam);
+    }
     if (urlParam) {
       setYtUrl(urlParam);
-      setTimeout(() => handleAnalyze(urlParam), 400);
+      setTimeout(() => handleAnalyze(urlParam, modeParam || mode), 400);
     }
   }, [searchParams]);
 
-  async function handleAnalyze(overrideUrl) {
+  async function handleAnalyze(overrideUrl, overrideMode) {
+    const targetMode = overrideMode || mode;
     const url = (overrideUrl || ytUrl).trim();
     if (!url) return;
 
@@ -108,7 +118,7 @@ function SentimentDashboardInner() {
     setActiveVideoUrl(url);
 
     try {
-      const apiUrl = `${API_BASE}?yturl=${encodeURIComponent(url)}&accuracy=${accuracy}`;
+      const apiUrl = `${API_BASE}?yturl=${encodeURIComponent(url)}&accuracy=${accuracy}&mode=${encodeURIComponent(targetMode)}`;
       const res = await fetch(apiUrl);
       const json = await res.json().catch(() => null);
       if (!res.ok) {
@@ -121,6 +131,9 @@ function SentimentDashboardInner() {
       if (updatedQuotas) setQuotas(updatedQuotas);
 
       setData(json);
+      if (json.mode && ["learner", "watcher", "creator"].includes(json.mode)) {
+        setMode(json.mode);
+      }
       setTimeout(() => {
         setAnimateResults(true);
         resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -162,8 +175,10 @@ function SentimentDashboardInner() {
           type="text"
           placeholder={
             mode === "creator"
-              ? "Paste your YouTube Video URL to analyze audience response..."
-              : "Paste YouTube Video URL to check viewer consensus..."
+              ? "Paste your YouTube Video URL to analyze audience response & content ideas..."
+              : mode === "learner"
+                ? "Paste educational tutorial or lecture YouTube URL to evaluate learning value..."
+                : "Paste YouTube Video URL to check viewer consensus..."
           }
           className={styles.searchInput}
           value={ytUrl}
@@ -328,25 +343,27 @@ function SentimentDashboardInner() {
           <div className={styles.heroCenterText}>
             <h1 className={styles.heroHeading}>
               <span className="animate-word-pop delay-200">
-                {mode === "creator" ? "Grow" : "Understand"}
+                {mode === "creator" ? "Grow" : mode === "learner" ? "Learn" : "Understand"}
               </span>{" "}
               <span className={styles.wordSpacing} />
               <br />
               <span className="animate-word-pop delay-400">
-                {mode === "creator" ? "With" : "The"}
+                {mode === "creator" ? "With" : mode === "learner" ? "Smarter" : "The"}
               </span>{" "}
               <span className="animate-word-pop delay-500">
-                {mode === "creator" ? "Audience" : "Video"}
+                {mode === "creator" ? "Audience" : mode === "learner" ? "With" : "Video"}
               </span>{" "}
               <span className="animate-word-pop delay-600">
-                {mode === "creator" ? "Insights" : "Feel"}
+                {mode === "creator" ? "Insights" : mode === "learner" ? "Insights" : "Feel"}
               </span>
             </h1>
 
             <p className={`${styles.heroSubtitle} animate-fade-up delay-600`}>
               {mode === "creator"
                 ? "AI-powered YouTube audience feedback & retention audit. Pinpoint audience pain points, uncover missing topics for your next video, and maximize engagement."
-                : "AI-powered YouTube video sentiment analyzer and viewer emotion breakdown. Explore authentic reviews, feedback, and audience reactions instantly."}
+                : mode === "learner"
+                  ? "AI-powered educational review & key concept extractor. Assess tutorial quality, study takeaways, and prerequisite gaps before you invest hours watching."
+                  : "AI-powered YouTube video sentiment analyzer and viewer emotion breakdown. Explore authentic reviews, feedback, and audience reactions instantly."}
             </p>
 
             {/* Main Hero Search Card */}
@@ -473,7 +490,11 @@ function SentimentDashboardInner() {
                   <div className={styles.mascotSidebarSubtitle}>{mascot.title}</div>
 
                   <p className={styles.mascotSidebarFeedback}>
-                    {mode === "creator" ? mascot.creatorFeedback : mascot.watcherFeedback}
+                    {mode === "creator"
+                      ? mascot.creatorFeedback
+                      : mode === "learner"
+                        ? (mascot.learnerFeedback || mascot.watcherFeedback)
+                        : mascot.watcherFeedback}
                   </p>
                 </div>
               )}
@@ -484,7 +505,11 @@ function SentimentDashboardInner() {
                 <div className={styles.placeholderCard}>
                   <div className={styles.placeholderHeader}>
                     <span className={styles.placeholderTitle}>
-                      {mode === "creator" ? "Content Quality Rating" : "Overall Rating"}
+                      {mode === "creator"
+                        ? "Content Quality Rating"
+                        : mode === "learner"
+                          ? "Learning Suitability"
+                          : "Overall Rating"}
                     </span>
                     <span className={styles.placeholderOrderBadge}>1 of 4</span>
                   </div>
@@ -497,7 +522,9 @@ function SentimentDashboardInner() {
                   <div className={styles.placeholderDesc}>
                     {mode === "creator"
                       ? "Aggregated audience satisfaction score"
-                      : "Aggregated quality score from viewers"}
+                      : mode === "learner"
+                        ? "Instructional clarity and educational score"
+                        : "Aggregated quality score from viewers"}
                   </div>
 
                   {/* Mascot Photo in Overall Rating Placeholder */}
@@ -524,7 +551,11 @@ function SentimentDashboardInner() {
                 <div className={styles.placeholderCard}>
                   <div className={styles.placeholderHeader}>
                     <span className={styles.placeholderTitle}>
-                      {mode === "creator" ? "Audience Sentiment" : "Viewer Sentiment"}
+                      {mode === "creator"
+                        ? "Audience Sentiment"
+                        : mode === "learner"
+                          ? "Learner Reception"
+                          : "Viewer Sentiment"}
                     </span>
                     <span className={styles.placeholderOrderBadge}>2 of 4</span>
                   </div>
@@ -537,7 +568,9 @@ function SentimentDashboardInner() {
                   <div className={styles.placeholderDesc}>
                     {mode === "creator"
                       ? "Dominant emotional mood in comments"
-                      : "Dominant audience feedback polarity"}
+                      : mode === "learner"
+                        ? "Student satisfaction & feedback polarity"
+                        : "Dominant audience feedback polarity"}
                   </div>
                 </div>
 
@@ -545,17 +578,23 @@ function SentimentDashboardInner() {
                 <div className={styles.placeholderCard}>
                   <div className={styles.placeholderHeader}>
                     <span className={styles.placeholderTitle}>
-                      {mode === "creator" ? "Expectation Delivery" : "Relevance Index"}
+                      {mode === "creator"
+                        ? "Expectation Delivery"
+                        : mode === "learner"
+                          ? "Curriculum Match"
+                          : "Relevance Index"}
                     </span>
                     <span className={styles.placeholderOrderBadge}>3 of 4</span>
                   </div>
                   <div className={styles.placeholderValue}>
-                    {analysis ? `${analysis.title_match?.score || 0} / 10` : "—"}
+                    {analysis ? `${analysis.title_match?.score ?? (typeof analysis.title_match === "number" ? analysis.title_match : 0)} / 10` : "—"}
                   </div>
                   <div className={styles.placeholderDesc}>
                     {mode === "creator"
                       ? "Title promise delivery vs viewer expectations"
-                      : "Title claim accuracy vs actual viewer feedback"}
+                      : mode === "learner"
+                        ? "Topic coverage vs title and claims"
+                        : "Title claim accuracy vs actual viewer feedback"}
                   </div>
                 </div>
 
@@ -563,7 +602,11 @@ function SentimentDashboardInner() {
                 <div className={styles.placeholderCard}>
                   <div className={styles.placeholderHeader}>
                     <span className={styles.placeholderTitle}>
-                      {mode === "creator" ? "Audience Sample" : "Audience Volume"}
+                      {mode === "creator"
+                        ? "Audience Sample"
+                        : mode === "learner"
+                          ? "Learner Feedback Count"
+                          : "Audience Volume"}
                     </span>
                     <span className={styles.placeholderOrderBadge}>4 of 4</span>
                   </div>
@@ -573,7 +616,9 @@ function SentimentDashboardInner() {
                   <div className={styles.placeholderDesc}>
                     {mode === "creator"
                       ? "Total viewer comments processed in sample"
-                      : "Comments sampled across thread"}
+                      : mode === "learner"
+                        ? "Student comments sampled across thread"
+                        : "Comments sampled across thread"}
                   </div>
                 </div>
               </div>
@@ -587,12 +632,18 @@ function SentimentDashboardInner() {
                   <div className={styles.resultsHeader}>
                     <div>
                       <h2 className={styles.resultsTitle}>
-                        {mode === "creator" ? "Audience Feedback Diagnostics" : "Detailed Breakdown"}
+                        {mode === "creator"
+                          ? "Audience Feedback Diagnostics"
+                          : mode === "learner"
+                            ? "Educational Breakdown & Takeaways"
+                            : "Detailed Viewer Breakdown"}
                       </h2>
                       <span style={{ fontSize: "13px", color: "#556e55", fontWeight: 600 }}>
                         {mode === "creator"
                           ? "Creator Mode: Metrics tailored for retention, topic expansion, and content optimization"
-                          : "Watcher Mode: Metrics tailored for time-saving, clickbait detection, and quality validation"}
+                          : mode === "learner"
+                            ? "Learner Mode: Evaluates instructional clarity, key concepts, and actionable takeaways"
+                            : "Watcher Mode: Metrics tailored for time-saving, clickbait detection, and quality validation"}
                       </span>
                     </div>
 
@@ -819,20 +870,378 @@ function SentimentDashboardInner() {
                     </div>
                   </div>
 
-                  {/* Analysis Limitations */}
-                  <div className={`${styles.card} ${styles.limitationsCard}`}>
-                    <h3 className={styles.cardTitle}>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-                        <line x1="12" y1="9" x2="12" y2="13" />
-                        <line x1="12" y1="17" x2="12.01" y2="17" />
-                      </svg>
-                      Analysis Limitations & Confidence
-                    </h3>
-                    <p className={styles.cardText}>{analysis.limitations}</p>
-                  </div>
+                  {/* Analysis Limitations & Confidence */}
+                  {analysis.limitations && (
+                    <div className={`${styles.card} ${styles.limitationsCard}`}>
+                      <h3 className={styles.cardTitle}>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                          <line x1="12" y1="9" x2="12" y2="13" />
+                          <line x1="12" y1="17" x2="12.01" y2="17" />
+                        </svg>
+                        Analysis Limitations & Confidence
+                      </h3>
+                      <p className={styles.cardText}>{analysis.limitations}</p>
+                    </div>
+                  )}
 
-                  {/* Lacking Topics & Gap Fill Videos */}
+                  {/* Common Analysis Field: Actionable Guidance (Always Displayed) */}
+                  {analysis.guidance && (
+                    <div className={`${styles.card} ${styles.guidanceCard}`}>
+                      <h3 className={styles.cardTitle}>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <circle cx="12" cy="12" r="10" />
+                          <line x1="12" y1="16" x2="12" y2="12" />
+                          <line x1="12" y1="8" x2="12.01" y2="8" />
+                        </svg>
+                        Actionable Guidance & Best Practices
+                      </h3>
+                      {renderGuidanceContent(analysis.guidance)}
+                    </div>
+                  )}
+
+                  {/* ================= MODE-SPECIFIC OUTPUT (analysis.mode_output) ================= */}
+                  {/* 1. LEARNER MODE OUTPUT */}
+                  {mode === "learner" && (
+                    <div className={styles.modeOutputWrapper}>
+                      <div className={styles.modeOutputHeader}>
+                        <span className={styles.modeOutputTag}>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                            <path d="M6 12v5c3 3 9 3 12 0v-5" />
+                          </svg>
+                          Learner Intelligence
+                        </span>
+                        <span className={styles.modeOutputSub}>
+                          Instructional quality evaluation, key concepts & study takeaways
+                        </span>
+                      </div>
+
+                      {/* good_for_learning: Show as learning score / status */}
+                      {analysis.mode_output?.good_for_learning !== undefined &&
+                        analysis.mode_output?.good_for_learning !== null && (
+                          <div className={styles.learnerHeroCard}>
+                            <div className={styles.learningScoreRow}>
+                              <div className={styles.learningScoreMeta}>
+                                <span className={styles.learningScoreLabel}>Educational Value Assessment</span>
+                                <div className={styles.learningStatusHeading}>
+                                  {getLearningAssessment(analysis.mode_output.good_for_learning).statusText}
+                                </div>
+                                {getLearningAssessment(analysis.mode_output.good_for_learning).reason && (
+                                  <p className={styles.cardText} style={{ margin: "4px 0 0 0" }}>
+                                    {getLearningAssessment(analysis.mode_output.good_for_learning).reason}
+                                  </p>
+                                )}
+                              </div>
+                              <div
+                                className={`${styles.learningScoreBadge} ${
+                                  styles[getLearningAssessment(analysis.mode_output.good_for_learning).badgeClass] ||
+                                  styles.learningBadgePositive
+                                }`}
+                              >
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                                  <path d="M6 12v5c3 3 9 3 12 0v-5" />
+                                </svg>
+                                <span>{getLearningAssessment(analysis.mode_output.good_for_learning).scoreText}</span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                      {/* important_topics */}
+                      {Array.isArray(analysis.mode_output?.important_topics) &&
+                        analysis.mode_output.important_topics.length > 0 && (
+                          <div className={styles.card}>
+                            <h3 className={styles.cardTitle}>
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                              </svg>
+                              Important Concepts & Core Topics Covered
+                            </h3>
+                            <div className={styles.importantTopicsGrid}>
+                              {analysis.mode_output.important_topics.map((t, idx) => {
+                                const topicName =
+                                  typeof t === "string"
+                                    ? t
+                                    : t.topic || t.name || t.title || JSON.stringify(t);
+                                const topicDesc =
+                                  typeof t === "object" ? t.description || t.detail || t.reason : null;
+                                return (
+                                  <div key={idx} className={styles.importantTopicCard}>
+                                    <div className={styles.importantTopicHeader}>
+                                      <div className={styles.importantTopicIcon}>
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                          <polyline points="20 6 9 17 4 12" />
+                                        </svg>
+                                      </div>
+                                      <span>{topicName}</span>
+                                    </div>
+                                    {topicDesc && (
+                                      <div className={styles.importantTopicDesc}>{topicDesc}</div>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+
+                      {/* learner_takeaways */}
+                      {Array.isArray(analysis.mode_output?.learner_takeaways) &&
+                        analysis.mode_output.learner_takeaways.length > 0 && (
+                          <div className={styles.card}>
+                            <h3 className={styles.cardTitle}>
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                              </svg>
+                              Core Learner Takeaways & Practical Insights
+                            </h3>
+                            <div className={styles.takeawaysList}>
+                              {analysis.mode_output.learner_takeaways.map((item, idx) => (
+                                <div key={idx} className={styles.takeawayItem}>
+                                  <span className={styles.takeawayNum}>{idx + 1}</span>
+                                  <div>
+                                    {typeof item === "string"
+                                      ? item
+                                      : item.takeaway || item.text || item.summary || JSON.stringify(item)}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                    </div>
+                  )}
+
+                  {/* 2. CREATOR MODE OUTPUT */}
+                  {mode === "creator" && (
+                    <div className={styles.modeOutputWrapper}>
+                      <div className={styles.modeOutputHeader}>
+                        <span className={styles.modeOutputTag}>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M23 7l-7 5 7 5V7z" />
+                            <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+                          </svg>
+                          Creator Diagnostics
+                        </span>
+                        <span className={styles.modeOutputSub}>
+                          Audience feedback, sentiment drivers & reusable content ideas
+                        </span>
+                      </div>
+
+                      {/* liked_by_users and disliked_by_users */}
+                      {((Array.isArray(analysis.mode_output?.liked_by_users) &&
+                        analysis.mode_output.liked_by_users.length > 0) ||
+                        (Array.isArray(analysis.mode_output?.disliked_by_users) &&
+                          analysis.mode_output.disliked_by_users.length > 0)) && (
+                        <div className={styles.creatorTwoCol}>
+                          {/* What Viewers Liked */}
+                          {Array.isArray(analysis.mode_output?.liked_by_users) &&
+                            analysis.mode_output.liked_by_users.length > 0 && (
+                              <div className={`${styles.card} ${styles.likedCard}`}>
+                                <h3 className={styles.cardTitle} style={{ color: "#166534" }}>
+                                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3" />
+                                  </svg>
+                                  What Viewers Loved Most
+                                </h3>
+                                <div className={styles.creatorFeedbackList}>
+                                  {analysis.mode_output.liked_by_users.map((item, idx) => (
+                                    <div key={idx} className={styles.likedItem}>
+                                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5" style={{ flexShrink: 0, marginTop: "2px" }}>
+                                        <polyline points="20 6 9 17 4 12" />
+                                      </svg>
+                                      <span>
+                                        {typeof item === "string"
+                                          ? item
+                                          : item.point || item.topic || item.text || JSON.stringify(item)}
+                                      </span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                          {/* What Viewers Disliked / Pain Points */}
+                          {Array.isArray(analysis.mode_output?.disliked_by_users) &&
+                            analysis.mode_output.disliked_by_users.length > 0 && (
+                              <div className={`${styles.card} ${styles.dislikedCard}`}>
+                                <h3 className={styles.cardTitle} style={{ color: "#991b1b" }}>
+                                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3" />
+                                  </svg>
+                                  Audience Pain Points & Critiques
+                                </h3>
+                                <div className={styles.creatorFeedbackList}>
+                                  {analysis.mode_output.disliked_by_users.map((item, idx) => (
+                                    <div key={idx} className={styles.dislikedItem}>
+                                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2.5" style={{ flexShrink: 0, marginTop: "2px" }}>
+                                        <line x1="18" y1="6" x2="6" y2="18" />
+                                        <line x1="6" y1="6" x2="18" y2="18" />
+                                      </svg>
+                                      <span>
+                                        {typeof item === "string"
+                                          ? item
+                                          : item.point || item.topic || item.critique || item.text || JSON.stringify(item)}
+                                      </span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                        </div>
+                      )}
+
+                      {/* trending_topics: Mark topics with can_be_used_for_content=true as reusable content ideas */}
+                      {Array.isArray(analysis.mode_output?.trending_topics) &&
+                        analysis.mode_output.trending_topics.length > 0 && (
+                          <div className={styles.card}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "8px" }}>
+                              <h3 className={styles.cardTitle}>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+                                  <polyline points="17 6 23 6 23 12" />
+                                </svg>
+                                Trending Discussion Topics
+                              </h3>
+                              <span style={{ fontSize: "12px", color: "#6a7c6a", fontWeight: 600 }}>
+                                💡 Marked topics are prime reusable content ideas
+                              </span>
+                            </div>
+
+                            <div className={styles.trendingList}>
+                              {analysis.mode_output.trending_topics.map((t, idx) => {
+                                const isContentIdea =
+                                  typeof t === "object" &&
+                                  (t.can_be_used_for_content === true || t.is_content_idea === true);
+                                const topicName =
+                                  typeof t === "string"
+                                    ? t
+                                    : t.topic || t.name || t.title || JSON.stringify(t);
+                                const mentions =
+                                  typeof t === "object" ? t.mentions || t.count || t.frequency : null;
+                                const explanation =
+                                  typeof t === "object" ? t.explanation || t.reason || t.description : null;
+
+                                return (
+                                  <div
+                                    key={idx}
+                                    className={`${styles.trendingItem} ${
+                                      isContentIdea ? styles.trendingItemContentIdea : ""
+                                    }`}
+                                  >
+                                    <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                                      <div className={styles.trendingTopicMain}>
+                                        <svg className={styles.trendingTopicIcon} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                          <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+                                          <polyline points="17 6 23 6 23 12" />
+                                        </svg>
+                                        <span>{topicName}</span>
+                                        {mentions && (
+                                          <span className={styles.trendingTopicMentions}>
+                                            ({mentions} mentions)
+                                          </span>
+                                        )}
+                                      </div>
+                                      {explanation && (
+                                        <p className={styles.cardText} style={{ margin: "2px 0 0 26px", fontSize: "13px" }}>
+                                          {explanation}
+                                        </p>
+                                      )}
+                                    </div>
+
+                                    {isContentIdea && (
+                                      <span className={styles.contentIdeaBadge}>
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                          <circle cx="12" cy="12" r="10" />
+                                          <line x1="12" y1="8" x2="12" y2="12" />
+                                          <line x1="12" y1="16" x2="12.01" y2="16" />
+                                        </svg>
+                                        Reusable Content Idea
+                                      </span>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+
+                      {/* source_content_suggestions: Future video opportunities */}
+                      {Array.isArray(analysis.mode_output?.source_content_suggestions) &&
+                        analysis.mode_output.source_content_suggestions.length > 0 && (
+                          <div className={styles.card}>
+                            <h3 className={styles.cardTitle}>
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <polygon points="12 2 2 7 12 12 22 7 12 2" />
+                                <polyline points="2 17 12 22 22 17" />
+                                <polyline points="2 12 12 17 22 12" />
+                              </svg>
+                              Source Content Suggestions for Next Video
+                            </h3>
+                            <p className={styles.cardText}>
+                              Fresh video concepts and expansion topics inspired directly by audience demand in the comments.
+                            </p>
+                            <div className={styles.sourceSuggestionsGrid}>
+                              {analysis.mode_output.source_content_suggestions.map((item, idx) => {
+                                const isContentIdea =
+                                  typeof item === "object" &&
+                                  (item.can_be_used_for_content === true || item.is_content_idea === true);
+                                const title =
+                                  typeof item === "string"
+                                    ? item
+                                    : item.title || item.suggestion || item.idea || item.topic || JSON.stringify(item);
+                                const desc =
+                                  typeof item === "object" ? item.description || item.reason || item.detail : null;
+
+                                return (
+                                  <div key={idx} className={styles.sourceSuggestionCard}>
+                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "8px" }}>
+                                      <div className={styles.sourceSuggestionTitle}>{title}</div>
+                                      {isContentIdea && (
+                                        <span className={styles.contentIdeaBadge}>
+                                          Reusable Idea
+                                        </span>
+                                      )}
+                                    </div>
+                                    {desc && (
+                                      <div className={styles.sourceSuggestionDesc}>{desc}</div>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+                    </div>
+                  )}
+
+                  {/* 3. WATCHER MODE: Show the common analysis fields as the main viewer summary */}
+                  {mode === "watcher" && (
+                    <div className={styles.watcherSummaryCard}>
+                      <span className={styles.watcherSummaryPill}>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                          <circle cx="12" cy="12" r="3" />
+                        </svg>
+                        Main Viewer Verdict & Summary
+                      </span>
+                      <h3 style={{ fontFamily: "var(--font-serif-display)", fontSize: "19px", color: "var(--primary-dark)", margin: "4px 0 8px 0" }}>
+                        {analysis.overall_rating >= 7
+                          ? "Worth Your Time • Recommended Watch"
+                          : analysis.overall_rating >= 4.8
+                            ? "Moderate Quality • Review Content Gaps Before Watching"
+                            : "Proceed With Caution • Significant Viewer Complaints"}
+                      </h3>
+                      <p className={styles.cardText} style={{ margin: 0 }}>
+                        {analysis.general_consensus}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Lacking Topics & Gap Fill Videos - Clickable YouTube Links */}
                   {((analysis.lacking_topics && analysis.lacking_topics.length > 0) ||
                     (lackingTopicVideos && lackingTopicVideos.length > 0)) && (
                       <div className={`${styles.card} ${styles.lackingTopicsSection}`}>
@@ -844,32 +1253,41 @@ function SentimentDashboardInner() {
                           </svg>
                           {mode === "creator"
                             ? "Content Opportunities For Your Next Video"
-                            : "Identified Content Gaps & Companion Videos"}
+                            : mode === "learner"
+                              ? "Prerequisite & Uncovered Topics (Gap Fill Videos)"
+                              : "Identified Content Gaps & Companion Videos"}
                         </h3>
                         <p className={styles.cardText}>
                           {mode === "creator"
                             ? "Topics your viewers asked for or felt were missing in this video — prime opportunities for your next upload!"
-                            : "Topics viewers felt were missing, incomplete, or unexplained, along with recommended companion videos to fill the gap."}
+                            : mode === "learner"
+                              ? "Concepts viewers felt were omitted or insufficiently explained, with companion YouTube tutorials to bridge the gap."
+                              : "Topics viewers felt were missing, incomplete, or unexplained, along with recommended companion videos to fill the gap."}
                         </p>
 
                         <div className={styles.topicList}>
                           {lackingTopicVideos && lackingTopicVideos.length > 0 ? (
-                            lackingTopicVideos.map((item, idx) => (
-                              <div key={idx} className={styles.topicCard}>
-                                <div className={styles.topicHeader}>
-                                  <div className={styles.topicTitleBadge}>
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                                      <circle cx="12" cy="10" r="3" />
-                                    </svg>
-                                    <span>{item.topic}</span>
+                            lackingTopicVideos.map((item, idx) => {
+                              const ytLink = getYouTubeLink(item);
+                              return (
+                                <div key={idx} className={styles.topicCard}>
+                                  <div className={styles.topicHeader}>
+                                    <div className={styles.topicTitleBadge}>
+                                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                                        <circle cx="12" cy="10" r="3" />
+                                      </svg>
+                                      <span>{item.topic}</span>
+                                    </div>
+                                    <span className={styles.topicTag}>
+                                      {mode === "creator"
+                                        ? "Viewer Demand"
+                                        : mode === "learner"
+                                          ? "Concept Gap"
+                                          : "Missing Detail"}
+                                    </span>
                                   </div>
-                                  <span className={styles.topicTag}>
-                                    {mode === "creator" ? "Viewer Demand" : "Missing Detail"}
-                                  </span>
-                                </div>
-                                <p className={styles.topicReason}>{item.reason}</p>
-                                {(item.video?.url || item.link) && (
+                                  <p className={styles.topicReason}>{item.reason}</p>
                                   <div className={styles.topicVideoRecommendation}>
                                     <div className={styles.recommendationLabel}>
                                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -877,47 +1295,73 @@ function SentimentDashboardInner() {
                                         <polyline points="17 2 12 7 7 2" />
                                       </svg>
                                       <span>
-                                        Suggested: <strong>{item.video?.title || item.suggestion || "Video Resource"}</strong>
+                                        Suggested: <strong>{item.video?.title || item.suggestion || "Companion Video"}</strong>
                                       </span>
                                     </div>
                                     <a
-                                      href={item.video?.url || item.link}
+                                      href={ytLink}
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       className={styles.videoPillLink}
+                                      title="Open recommended video on YouTube"
                                     >
-                                      <span>Watch Video</span>
+                                      <span>Watch on YouTube</span>
                                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                                         <line x1="7" y1="17" x2="17" y2="7" />
                                         <polyline points="7 7 17 7 17 17" />
                                       </svg>
                                     </a>
                                   </div>
-                                )}
-                              </div>
-                            ))
-                          ) : (
-                            analysis.lacking_topics?.map((item, idx) => (
-                              <div key={idx} className={styles.topicCard}>
-                                <div className={styles.topicHeader}>
-                                  <div className={styles.topicTitleBadge}>
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                                      <circle cx="12" cy="10" r="3" />
-                                    </svg>
-                                    <span>{item.topic}</span>
-                                  </div>
-                                  <span className={styles.topicTag}>Topic Gap</span>
                                 </div>
-                                <p className={styles.topicReason}>{item.reason}</p>
-                              </div>
-                            ))
+                              );
+                            })
+                          ) : (
+                            analysis.lacking_topics?.map((item, idx) => {
+                              const ytSearchLink = getYouTubeLink(item);
+                              return (
+                                <div key={idx} className={styles.topicCard}>
+                                  <div className={styles.topicHeader}>
+                                    <div className={styles.topicTitleBadge}>
+                                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                                        <circle cx="12" cy="10" r="3" />
+                                      </svg>
+                                      <span>{typeof item === "string" ? item : item.topic}</span>
+                                    </div>
+                                    <span className={styles.topicTag}>Topic Gap</span>
+                                  </div>
+                                  {typeof item === "object" && item.reason && (
+                                    <p className={styles.topicReason}>{item.reason}</p>
+                                  )}
+                                  <div className={styles.topicVideoRecommendation}>
+                                    <div className={styles.recommendationLabel}>
+                                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <polygon points="5 3 19 12 5 21 5 3" />
+                                      </svg>
+                                      <span>Search gap fill tutorials on YouTube:</span>
+                                    </div>
+                                    <a
+                                      href={ytSearchLink}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className={styles.videoPillLink}
+                                    >
+                                      <span>Search YouTube</span>
+                                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                        <line x1="7" y1="17" x2="17" y2="7" />
+                                        <polyline points="7 7 17 7 17 17" />
+                                      </svg>
+                                    </a>
+                                  </div>
+                                </div>
+                              );
+                            })
                           )}
                         </div>
                       </div>
                     )}
 
-                  {/* Related Videos */}
+                  {/* Related Videos - Clickable YouTube Links */}
                   {relatedVideos && relatedVideos.length > 0 && (
                     <div className={`${styles.card} ${styles.lackingTopicsSection}`}>
                       <h3 className={styles.cardTitle}>
@@ -926,45 +1370,53 @@ function SentimentDashboardInner() {
                         </svg>
                         {mode === "creator"
                           ? "Competitor & Related Content Benchmarks"
-                          : "Related Videos to Explore"}
+                          : mode === "learner"
+                            ? "Recommended Learning Resources & Alternatives"
+                            : "Related Videos to Explore"}
                       </h3>
                       <p className={styles.cardText}>
                         {mode === "creator"
                           ? "Videos covering similar topics or adjacent themes in this niche."
-                          : "Videos exploring similar subjects or alternative perspectives on this topic."}
+                          : mode === "learner"
+                            ? "High-relevance companion tutorials and alternative explanations on YouTube."
+                            : "Videos exploring similar subjects or alternative perspectives on this topic."}
                       </p>
 
                       <div className={styles.relatedVideosGrid}>
-                        {relatedVideos.map((video, idx) => (
-                          <a
-                            key={idx}
-                            href={video.url || video.link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={styles.relatedVideoCard}
-                          >
-                            <div className={styles.relatedVideoHeader}>
-                              <div className={styles.relatedVideoIcon}>
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                                  <polygon points="5 3 19 12 5 21 5 3" />
-                                </svg>
+                        {relatedVideos.map((video, idx) => {
+                          const ytLink = getYouTubeLink(video);
+                          return (
+                            <a
+                              key={idx}
+                              href={ytLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={styles.relatedVideoCard}
+                              title={`Watch "${video.title}" on YouTube`}
+                            >
+                              <div className={styles.relatedVideoHeader}>
+                                <div className={styles.relatedVideoIcon}>
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                    <polygon points="5 3 19 12 5 21 5 3" />
+                                  </svg>
+                                </div>
+                                <div className={styles.relatedVideoTitle}>{video.title}</div>
                               </div>
-                              <div className={styles.relatedVideoTitle}>{video.title}</div>
-                            </div>
-                            <div className={styles.relatedVideoFooter}>
-                              <span className={styles.relatedVideoChannel}>
-                                {video.channel || "YouTube"}
-                              </span>
-                              <span className={styles.relatedVideoWatch}>
-                                <span>Watch</span>
-                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                  <line x1="7" y1="17" x2="17" y2="7" />
-                                  <polyline points="7 7 17 7 17 17" />
-                                </svg>
-                              </span>
-                            </div>
-                          </a>
-                        ))}
+                              <div className={styles.relatedVideoFooter}>
+                                <span className={styles.relatedVideoChannel}>
+                                  {video.channel || "YouTube"}
+                                </span>
+                                <span className={styles.relatedVideoWatch}>
+                                  <span>Watch on YouTube</span>
+                                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                    <line x1="7" y1="17" x2="17" y2="7" />
+                                    <polyline points="7 7 17 7 17 17" />
+                                  </svg>
+                                </span>
+                              </div>
+                            </a>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
@@ -989,7 +1441,126 @@ export default function Home() {
   );
 }
 
-// ===== Helpers (No Emojis, Pure Math / Color Coordinates) =====
+// ===== Helper Functions =====
+function getYouTubeLink(item) {
+  if (!item) return "https://www.youtube.com";
+  if (typeof item === "string" && (item.startsWith("http://") || item.startsWith("https://"))) {
+    return item;
+  }
+  if (item.url && typeof item.url === "string") return item.url;
+  if (item.link && typeof item.link === "string") return item.link;
+  if (item.video?.url && typeof item.video.url === "string") return item.video.url;
+  if (item.video?.link && typeof item.video.link === "string") return item.video.link;
+  if (item.videoId) return `https://www.youtube.com/watch?v=${item.videoId}`;
+  if (item.video?.videoId) return `https://www.youtube.com/watch?v=${item.video.videoId}`;
+
+  const query = item.video?.title || item.title || item.suggestion || item.topic || "YouTube";
+  return `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`;
+}
+
+function renderGuidanceContent(guidance) {
+  if (!guidance) return null;
+  if (typeof guidance === "string") {
+    return <p className={styles.cardText}>{guidance}</p>;
+  }
+  if (Array.isArray(guidance)) {
+    return (
+      <ul className={styles.guidanceList}>
+        {guidance.map((item, idx) => {
+          const text =
+            typeof item === "string"
+              ? item
+              : item.guidance || item.tip || item.text || item.advice || JSON.stringify(item);
+          return (
+            <li key={idx} className={styles.guidanceItem}>
+              <svg className={styles.guidanceItemIcon} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 14 14" />
+              </svg>
+              <span>{text}</span>
+            </li>
+          );
+        })}
+      </ul>
+    );
+  }
+  if (typeof guidance === "object") {
+    return (
+      <div className={styles.guidanceObj}>
+        {Object.entries(guidance).map(([k, v], idx) => (
+          <div key={idx} className={styles.guidanceSubItem}>
+            <strong style={{ textTransform: "capitalize" }}>{k.replace(/_/g, " ")}: </strong>
+            <span>{typeof v === "object" ? JSON.stringify(v) : String(v)}</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  return <p className={styles.cardText}>{String(guidance)}</p>;
+}
+
+function getLearningAssessment(val) {
+  if (typeof val === "boolean") {
+    return {
+      statusText: val ? "Recommended for Learning" : "Limited Educational Value",
+      badgeClass: val ? "learningBadgePositive" : "learningBadgeNegative",
+      scoreText: val ? "High Quality" : "Needs Supplement",
+      isPositive: val,
+    };
+  }
+  if (typeof val === "number") {
+    const isGood = val >= 7;
+    const isMid = val >= 4.8;
+    return {
+      statusText: isGood
+        ? "Highly Recommended for Learning"
+        : isMid
+          ? "Moderate Educational Value"
+          : "Not Recommended for Learning",
+      badgeClass: isGood
+        ? "learningBadgePositive"
+        : isMid
+          ? "learningBadgeNeutral"
+          : "learningBadgeNegative",
+      scoreText: `${val} / 10`,
+      isPositive: isGood,
+    };
+  }
+  if (typeof val === "string") {
+    const lower = val.toLowerCase();
+    const isBad =
+      lower.includes("not") || lower.includes("poor") || lower.includes("bad") || lower.includes("low");
+    const isGood =
+      lower.includes("yes") || lower.includes("high") || lower.includes("great") || lower.includes("recommend");
+    return {
+      statusText: val,
+      badgeClass: isGood
+        ? "learningBadgePositive"
+        : isBad
+          ? "learningBadgeNegative"
+          : "learningBadgeNeutral",
+      scoreText: val,
+      isPositive: !isBad,
+    };
+  }
+  if (typeof val === "object" && val !== null) {
+    const isGood = val.recommended === true || (val.score && val.score >= 6);
+    return {
+      statusText: val.status || val.recommendation || (val.score ? `Score: ${val.score}/10` : "Assessed"),
+      badgeClass: isGood ? "learningBadgePositive" : "learningBadgeNeutral",
+      scoreText: val.score ? `${val.score} / 10` : val.status || "Assessed",
+      reason: val.reason || val.explanation,
+      isPositive: isGood,
+    };
+  }
+  return {
+    statusText: "Learning Assessed",
+    badgeClass: "learningBadgePositive",
+    scoreText: "Available",
+    isPositive: true,
+  };
+}
+
 function getSentimentPosition(sentiment) {
   const map = { negative: 18, mixed: 45, neutral: 50, positive: 88 };
   return map[sentiment] || 50;
@@ -1011,3 +1582,4 @@ function getScoreGradient(score) {
   if (score <= 7) return "linear-gradient(90deg, #eab308, #facc15)";
   return "linear-gradient(90deg, #1b8a36, #4ade80)";
 }
+

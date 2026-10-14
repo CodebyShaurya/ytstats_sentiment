@@ -12,7 +12,7 @@ export default function AboutPage() {
   useEffect(() => {
     try {
       const savedMode = localStorage.getItem("yt_sentiment_user_mode");
-      if (savedMode === "creator" || savedMode === "watcher") {
+      if (savedMode === "creator" || savedMode === "watcher" || savedMode === "learner") {
         setMode(savedMode);
       }
     } catch (e) { }
