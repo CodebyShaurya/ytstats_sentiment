@@ -8,7 +8,20 @@ export default function Footer() {
         <div className={styles.brandRow}>
           <div className={styles.brandInfo}>
             <div className={styles.brandLogo}>
-              <img src="/logo.png" alt="YT Sentiment" className={styles.logoImg} />
+              <div className={styles.orbitSvgBadge}>
+                <svg
+                  viewBox="0 0 26.9 16.6"
+                  style={{ width: "26px", height: "16px", overflow: "visible" }}
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <ellipse cx="13.25" cy="8.4" rx="13.2" ry="2.9" transform="rotate(-25 13.25 8.4)" stroke="currentColor" strokeWidth="1.25" />
+                  <circle cx="13.25" cy="8.4" r="8.8" fill="#000" />
+                  <circle cx="13.25" cy="8.4" r="8.1" fill="currentColor" />
+                  <ellipse cx="13.25" cy="8.4" rx="13.2" ry="2.9" transform="rotate(-25 13.25 8.4)" stroke="#000" strokeWidth="0.9" strokeDasharray="28.2 28.2" />
+                  <ellipse cx="13.25" cy="8.4" rx="13.2" ry="2.9" transform="rotate(-25 13.25 8.4)" stroke="currentColor" strokeWidth="1.25" strokeDasharray="28.2 28.2" />
+                </svg>
+              </div>
               <span className={styles.brandName}>YT Sentiment Analyzer</span>
             </div>
             <p className={styles.brandDesc}>
@@ -34,7 +47,7 @@ export default function Footer() {
             <span className={styles.colHeading}>Brand Ambassadors</span>
             <div className={styles.ambassadorPill}>
               <img
-                src="/images/dogs/happy-dog.png"
+                src="/Happy.png"
                 alt="Buddy"
                 className={styles.miniPup}
               />
@@ -45,7 +58,7 @@ export default function Footer() {
             </div>
             <div className={styles.ambassadorPill}>
               <img
-                src="/images/dogs/neutral-dog.png"
+                src="/Neutral.png"
                 alt="Sammy"
                 className={styles.miniPup}
               />
@@ -56,7 +69,7 @@ export default function Footer() {
             </div>
             <div className={styles.ambassadorPill}>
               <img
-                src="/images/dogs/sad-dog.png"
+                src="/Sad.png"
                 alt="Barnaby"
                 className={styles.miniPup}
               />
