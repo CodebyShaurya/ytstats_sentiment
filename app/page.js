@@ -157,30 +157,24 @@ function SentimentDashboardInner() {
   // Render the search card with mode switcher, input, slider (with quota badge), and analyze button
   const renderSearchCard = (isCompact = false) => (
     <div
-      className={`w-full transition-all duration-300 relative z-35 flex flex-col gap-3 ${isCompact
-          ? "p-2.5 sm:p-3.5 rounded-2xl bg-zinc-950/90 border border-white/20 shadow-2xl backdrop-blur-2xl"
-          : "max-w-[820px] mx-auto p-4 sm:p-5 rounded-3xl bg-zinc-950/85 border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.7)] backdrop-blur-2xl"
-        }`}
+      className={`${isCompact ? styles.searchCardCompact : styles.searchCardWrapper}`}
     >
       {/* Row 1: Mode Switcher Tabs inside Input Card */}
-      <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-white/10">
-        <div className="flex items-center gap-2">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-white/50 pl-1">
+      <div className={styles.searchModeRow}>
+        <div className={styles.searchModeInfo}>
+          <span className={styles.searchModeLabel}>
             Mode:
           </span>
-          <span className="text-xs font-semibold text-white/90 capitalize">
+          <span className={styles.searchModeCurrent}>
             {mode} Mode
           </span>
         </div>
 
-        <div className="inline-flex p-0.5 rounded-full bg-white/[0.08] border border-white/15 backdrop-blur-md shadow-inner">
+        <div className={styles.searchModePillGroup}>
           <button
             type="button"
             onClick={() => handleModeChange("watcher")}
-            className={`px-3 py-1 rounded-full text-xs font-medium transition-all duration-200 flex items-center gap-1.5 ${mode === "watcher"
-                ? "bg-white text-black font-semibold shadow-md shadow-white/20 scale-[1.02]"
-                : "text-white/70 hover:text-white hover:bg-white/10"
-              }`}
+            className={`${styles.searchModeBtn} ${mode === "watcher" ? styles.searchModeBtnActive : ""}`}
           >
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
               <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
@@ -191,10 +185,7 @@ function SentimentDashboardInner() {
           <button
             type="button"
             onClick={() => handleModeChange("learner")}
-            className={`px-3 py-1 rounded-full text-xs font-medium transition-all duration-200 flex items-center gap-1.5 ${mode === "learner"
-                ? "bg-white text-black font-semibold shadow-md shadow-white/20 scale-[1.02]"
-                : "text-white/70 hover:text-white hover:bg-white/10"
-              }`}
+            className={`${styles.searchModeBtn} ${mode === "learner" ? styles.searchModeBtnActive : ""}`}
           >
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
               <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
@@ -205,10 +196,7 @@ function SentimentDashboardInner() {
           <button
             type="button"
             onClick={() => handleModeChange("creator")}
-            className={`px-3 py-1 rounded-full text-xs font-medium transition-all duration-200 flex items-center gap-1.5 ${mode === "creator"
-                ? "bg-white text-black font-semibold shadow-md shadow-white/20 scale-[1.02]"
-                : "text-white/70 hover:text-white hover:bg-white/10"
-              }`}
+            className={`${styles.searchModeBtn} ${mode === "creator" ? styles.searchModeBtnActive : ""}`}
           >
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
               <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
@@ -218,60 +206,60 @@ function SentimentDashboardInner() {
         </div>
       </div>
 
-      {/* Row 2: URL Input and Analyze Button */}
-      <div className="flex items-center gap-2.5 sm:gap-3.5 w-full">
-        <svg
-          className="text-white/40 flex-shrink-0"
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          <circle cx="11" cy="11" r="8" />
-          <line x1="21" y1="21" x2="16.65" y2="16.65" />
-        </svg>
-
-        <input
-          type="text"
-          placeholder={
-            mode === "creator"
-              ? "Paste your YouTube Video URL to analyze audience response & content ideas..."
-              : mode === "learner"
-                ? "Paste educational tutorial or lecture YouTube URL to evaluate learning value..."
-                : "Paste YouTube Video URL to check viewer consensus..."
-          }
-          className="flex-1 min-w-0 bg-transparent border-0 outline-none text-white placeholder:text-white/40 text-sm sm:text-base font-normal font-sans py-1"
-          value={ytUrl}
-          onChange={(e) => setYtUrl(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleAnalyze()}
-        />
-
-        {ytUrl && (
-          <button
-            type="button"
-            className="p-1 rounded-full text-white/50 hover:text-white hover:bg-white/10 transition-colors flex-shrink-0"
-            onClick={() => setYtUrl("")}
-            title="Clear URL"
-            aria-label="Clear URL"
+      {/* Row 2: URL Input Box with Generous Padding and Analyze Button */}
+      <div className={styles.searchInputRow}>
+        <div className={styles.inputFieldWrapper}>
+          <svg
+            className={styles.searchIcon}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
-        )}
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+
+          <input
+            type="text"
+            placeholder={
+              mode === "creator"
+                ? "Paste YouTube Video URL to analyze audience response & content ideas..."
+                : mode === "learner"
+                  ? "Paste educational tutorial or lecture YouTube URL to evaluate learning value..."
+                  : "Paste YouTube Video URL to check viewer consensus..."
+            }
+            className={styles.urlInput}
+            value={ytUrl}
+            onChange={(e) => setYtUrl(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleAnalyze()}
+          />
+
+          {ytUrl && (
+            <button
+              type="button"
+              className={styles.clearInputBtn}
+              onClick={() => setYtUrl("")}
+              title="Clear URL"
+              aria-label="Clear URL"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          )}
+        </div>
 
         <button
-          className="flex-shrink-0 bg-white hover:bg-zinc-200 text-black px-4 sm:px-6 py-2 sm:py-2.5 rounded-full font-semibold text-xs sm:text-sm flex items-center gap-2 transition-all shadow-lg shadow-white/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+          className={styles.analyzeBtn}
           onClick={() => handleAnalyze()}
           disabled={loading || !ytUrl.trim() || !canSearch(currentModeKey)}
           title={!canSearch(currentModeKey) ? "Daily quota exhausted for this mode" : "Analyze video"}
         >
           {loading ? (
             <>
-              <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+              <div className={styles.spinnerSmall} />
               <span>Analyzing...</span>
             </>
           ) : (
@@ -286,13 +274,13 @@ function SentimentDashboardInner() {
         </button>
       </div>
 
-      {/* Row 3: Only Keep the Slider + Quota Status Badge (Repeating selection buttons removed) */}
-      <div className="flex items-center justify-between gap-3 pt-2.5 border-t border-white/10 flex-wrap">
-        <div className="flex items-center gap-3 flex-1 min-w-[240px]">
-          <span className="text-xs font-semibold text-white/70 whitespace-nowrap">
+      {/* Row 3: Only Keep the Slider + Quota Status Badge */}
+      <div className={styles.searchSliderRow}>
+        <div className={styles.searchSliderTrackGroup}>
+          <span className={styles.searchSliderLabel}>
             Analysis Depth:
           </span>
-          <div className="flex-1 flex items-center relative">
+          <div style={{ flex: 1, display: "flex", alignItems: "center", position: "relative" }}>
             <input
               type="range"
               min="1"
@@ -303,21 +291,19 @@ function SentimentDashboardInner() {
                 setSliderVal(parseInt(e.target.value, 10));
                 setQuotaAlert(null);
               }}
-              className="w-full h-1.5 bg-white/20 rounded-full appearance-none cursor-pointer accent-white"
+              className={styles.searchSliderInput}
               aria-label="Analysis depth slider"
             />
           </div>
         </div>
 
         {/* Quota Badge Indicator next to the slider */}
-        <div className="flex items-center gap-2">
-          <span className="text-[11px] sm:text-xs font-semibold text-white/80 bg-white/[0.08] border border-white/15 px-3 py-1 rounded-full backdrop-blur-sm whitespace-nowrap">
-            {sliderVal === 1
-              ? `Fast (~50) • ${quotas.fast}/3 remaining today`
-              : sliderVal === 2
-                ? `Balanced (~200) • ${quotas.balanced}/2 remaining today`
-                : `Deep (~500) • ${quotas.deep}/1 remaining today`}
-          </span>
+        <div className={styles.searchQuotaBadge}>
+          {sliderVal === 1
+            ? `Fast (~50) • ${quotas.fast}/3 remaining today`
+            : sliderVal === 2
+              ? `Balanced (~200) • ${quotas.balanced}/2 remaining today`
+              : `Deep (~500) • ${quotas.deep}/1 remaining today`}
         </div>
       </div>
     </div>
@@ -1207,14 +1193,14 @@ function SentimentDashboardInner() {
                           </svg>
                           Main Viewer Verdict & Summary
                         </span>
-                        <h3 style={{ fontFamily: "var(--font-serif-display)", fontSize: "19px", color: "var(--primary-dark)", margin: "4px 0 8px 0" }}>
+                        <h3 style={{ fontFamily: "var(--font-serif-display)", fontSize: "20px", color: "#000000", margin: "6px 0 10px 0", fontWeight: 800, lineHeight: 1.25 }}>
                           {analysis.overall_rating >= 7
                             ? "Worth Your Time • Recommended Watch"
                             : analysis.overall_rating >= 4.8
                               ? "Moderate Quality • Review Content Gaps Before Watching"
                               : "Proceed With Caution • Significant Viewer Complaints"}
                         </h3>
-                        <p className={styles.cardText} style={{ margin: 0 }}>
+                        <p className={styles.cardText} style={{ margin: 0, color: "rgba(0,0,0,0.72)" }}>
                           {analysis.general_consensus}
                         </p>
                       </div>

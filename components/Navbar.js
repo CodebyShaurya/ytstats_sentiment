@@ -71,77 +71,8 @@ export default function Navbar({
         </nav>
       )}
 
-      {/* Right: Mode Switcher & Mobile Links */}
+      {/* Right: Compact nav links only when searched, modes live in input bar */}
       <div className={styles.rightGroup}>
-        {/* Tri-Mode Switcher: Watcher vs Learner vs Creator */}
-        <div
-          className={styles.modeSwitchWrapper}
-          role="group"
-          aria-label="User Perspective Mode Switcher"
-        >
-          <button
-            type="button"
-            className={`${styles.modeBtn} ${mode === "watcher" ? styles.modeBtnActive : ""}`}
-            onClick={() => onModeChange && onModeChange("watcher")}
-            title="Viewer / Watcher mode: Find out if a video is worth your time"
-          >
-            <svg
-              className={styles.modeIcon}
-              width="15"
-              height="15"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-              <circle cx="12" cy="12" r="3" />
-            </svg>
-            <span>Watcher</span>
-          </button>
-          <button
-            type="button"
-            className={`${styles.modeBtn} ${mode === "learner" ? styles.modeBtnActive : ""}`}
-            onClick={() => onModeChange && onModeChange("learner")}
-            title="Learner mode: Extract key concepts, study takeaways, and learning score"
-          >
-            <svg
-              className={styles.modeIcon}
-              width="15"
-              height="15"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
-              <path d="M6 12v5c3 3 9 3 12 0v-5" />
-            </svg>
-            <span>Learner</span>
-          </button>
-          <button
-            type="button"
-            className={`${styles.modeBtn} ${mode === "creator" ? styles.modeBtnActive : ""}`}
-            onClick={() => onModeChange && onModeChange("creator")}
-            title="Content Creator mode: Analyze audience retention and feedback"
-          >
-            <svg
-              className={styles.modeIcon}
-              width="15"
-              height="15"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path d="M23 7l-7 5 7 5V7z" />
-              <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
-            </svg>
-            <span>Creator</span>
-          </button>
-        </div>
-
-        {/* Navigation links for compact/searched state if needed */}
         {hasSearched && (
           <div className={styles.compactNavRow}>
             <Link href="/how-it-works" className={styles.compactNavLink} title="How It Works">

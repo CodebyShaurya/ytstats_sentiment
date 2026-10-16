@@ -47,35 +47,35 @@ export default function Footer() {
             <span className={styles.colHeading}>Brand Ambassadors</span>
             <div className={styles.ambassadorPill}>
               <img
-                src="/Happy.png"
-                alt="Buddy"
+                src="/Watcher.png"
+                alt="Pulse — Watcher Ambassador"
                 className={styles.miniPup}
               />
               <div>
-                <strong>Buddy</strong>
-                <span>Positive Praise</span>
+                <strong>Pulse</strong>
+                <span>Watcher Mode</span>
               </div>
             </div>
             <div className={styles.ambassadorPill}>
               <img
-                src="/Neutral.png"
-                alt="Sammy"
+                src="/learner.png"
+                alt="Scout — Learner Ambassador"
                 className={styles.miniPup}
               />
               <div>
-                <strong>Sammy</strong>
-                <span>Balanced Pulse</span>
+                <strong>Scout</strong>
+                <span>Learner Mode</span>
               </div>
             </div>
             <div className={styles.ambassadorPill}>
               <img
-                src="/Sad.png"
-                alt="Barnaby"
+                src="/Creator.png"
+                alt="Blaze — Creator Ambassador"
                 className={styles.miniPup}
               />
               <div>
-                <strong>Barnaby</strong>
-                <span>Critical Quality</span>
+                <strong>Blaze</strong>
+                <span>Creator Mode</span>
               </div>
             </div>
           </div>

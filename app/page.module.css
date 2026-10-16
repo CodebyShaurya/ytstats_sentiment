@@ -116,8 +116,14 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 2.5rem 1.5rem 1rem;
+  padding: 3rem 2rem 1.5rem;
   transition: all 0.4s ease;
+}
+
+@media (max-width: 640px) {
+  .heroCenterText {
+    padding: 2rem 1.25rem 1rem;
+  }
 }
 
 /* Eyebrow Pill from Orbit Section 5 */
@@ -198,64 +204,186 @@
   line-height: 1.6;
 }
 
-/* ================= SEARCH CARD & SLIDER (Orbit Glass Theme) ================= */
+/* ================= SEARCH CARD & INPUT FIELD ================= */
 .searchCardWrapper {
   width: 100%;
-  max-width: 780px;
-  background: rgba(18, 18, 22, 0.85);
-  backdrop-filter: blur(20px) saturate(140%);
-  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  max-width: 860px;
+  background: rgba(14, 14, 18, 0.94);
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
   border-radius: 28px;
-  padding: 14px 18px;
-  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.65), 0 0 40px rgba(155, 140, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  margin: 0 auto 1.5rem;
+  padding: 1.75rem 2rem;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(155, 140, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  margin: 0 auto 1.75rem;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 1.25rem;
   position: relative;
   z-index: 35;
   transition: all 0.3s ease;
 }
 
-.searchCardCompact {
-  margin: 0;
-  padding: 8px 14px;
-  border-radius: 20px;
-  background: rgba(14, 16, 22, 0.92);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-  gap: 8px;
+@media (max-width: 640px) {
+  .searchCardWrapper {
+    padding: 1.25rem 1.25rem;
+    border-radius: 22px;
+  }
 }
 
-/* Main Input Row */
+.searchCardCompact {
+  margin: 0;
+  padding: 0.85rem 1.25rem;
+  border-radius: 20px;
+  background: rgba(14, 16, 22, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.6);
+  gap: 0.75rem;
+}
+
+/* Mode Switcher inside Search Card */
+.searchModeRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex-wrap: wrap;
+}
+
+.searchModeInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.searchModeLabel {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.5);
+  padding-left: 2px;
+}
+
+.searchModeCurrent {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #ffffff;
+  text-transform: capitalize;
+}
+
+.searchModePillGroup {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  gap: 2px;
+}
+
+.searchModeBtn {
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.searchModeBtn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.searchModeBtnActive {
+  background: #ffffff !important;
+  color: #000000 !important;
+  font-weight: 700 !important;
+  box-shadow: 0 2px 10px rgba(255, 255, 255, 0.25);
+  transform: scale(1.02);
+}
+
+/* THE INPUT ROW & INPUT FIELD CONTAINER */
 .searchInputRow {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 1rem;
   width: 100%;
 }
 
-.searchIcon {
-  color: rgba(255, 255, 255, 0.5);
-  flex-shrink: 0;
-}
-
-.searchInput {
+.inputFieldWrapper {
   flex: 1;
   min-width: 0;
-  border: none;
-  background: transparent;
-  outline: none;
-  font-size: 15px;
-  font-weight: 500;
-  color: #ffffff;
-  font-family: var(--font-inter-family);
-  overflow-x: auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1.5px solid rgba(255, 255, 255, 0.16);
+  border-radius: 20px;
+  padding: 14px 22px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) inset;
+  transition: all 0.25s ease;
 }
 
-.searchInput::placeholder {
-  color: rgba(255, 255, 255, 0.42);
+@media (max-width: 640px) {
+  .inputFieldWrapper {
+    padding: 11px 16px;
+    gap: 10px;
+    border-radius: 16px;
+  }
+}
+
+.inputFieldWrapper:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+.inputFieldWrapper:focus-within {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.55);
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.14), 0 4px 16px rgba(0, 0, 0, 0.4) inset;
+}
+
+.searchIcon {
+  color: rgba(255, 255, 255, 0.55);
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+
+.urlInput {
+  flex: 1;
+  min-width: 0;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  color: #ffffff !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  font-family: var(--font-inter-family) !important;
+  padding: 2px 4px !important;
+  line-height: 1.5 !important;
+}
+
+.urlInput:focus,
+.urlInput:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+.urlInput::placeholder {
+  color: rgba(255, 255, 255, 0.45);
   font-weight: 400;
 }
 
@@ -263,13 +391,13 @@
   background: transparent;
   border: none;
   color: rgba(255, 255, 255, 0.5);
-  font-size: 14px;
   cursor: pointer;
-  padding: 4px;
+  padding: 6px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
   transition: all 0.2s;
 }
 
@@ -278,141 +406,96 @@
   background: rgba(255, 255, 255, 0.12);
 }
 
-/* Analyze button matching Orbit Solid Button */
 .analyzeBtn {
-  background: #ffffff;
-  color: #000000;
-  border: none;
-  border-radius: 9999px;
-  padding: 10px 24px;
-  font-size: 14px;
-  font-weight: 600;
+  background: #ffffff !important;
+  color: #000000 !important;
+  border: none !important;
+  border-radius: 20px !important;
+  padding: 15px 28px !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
   display: flex;
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  transition: all 0.18s ease;
+  transition: all 0.2s ease;
   flex-shrink: 0;
-  box-shadow: 0 4px 16px rgba(255, 255, 255, 0.25);
+  box-shadow: 0 8px 24px rgba(255, 255, 255, 0.22);
+}
+
+@media (max-width: 640px) {
+  .analyzeBtn {
+    padding: 12px 20px !important;
+    font-size: 14px !important;
+    border-radius: 16px !important;
+  }
 }
 
 .analyzeBtn:hover:not(:disabled) {
-  background: #e9e9ea;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 22px rgba(255, 255, 255, 0.35);
+  background: #f4f4f5 !important;
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 10px 28px rgba(255, 255, 255, 0.35);
+}
+
+.analyzeBtn:active:not(:disabled) {
+  transform: scale(0.98);
 }
 
 .analyzeBtn:disabled {
-  opacity: 0.5;
+  opacity: 0.45;
   cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
+  transform: none !important;
+  box-shadow: none !important;
 }
 
-/* Secondary Row: Slider & Accuracy Mode */
-.searchControlsRow {
+/* Slider Row */
+.searchSliderRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: 10px;
-  border-top: 1px solid rgba(255, 255, 255, 0.10);
-  gap: 16px;
+  gap: 1rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   flex-wrap: wrap;
 }
 
-.sliderGroup {
+.searchSliderTrackGroup {
   display: flex;
   align-items: center;
   gap: 12px;
   flex: 1;
-  min-width: 200px;
+  min-width: 240px;
 }
 
-.sliderLabel {
+.searchSliderLabel {
   font-size: 12px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.65);
+  color: rgba(255, 255, 255, 0.7);
   white-space: nowrap;
 }
 
-.sliderTrackWrapper {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  position: relative;
-}
-
-.sliderInput {
-  -webkit-appearance: none;
-  appearance: none;
+.searchSliderInput {
   width: 100%;
   height: 6px;
+  background: rgba(255, 255, 255, 0.2);
   border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.16);
-  outline: none;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.sliderInput::-webkit-slider-thumb {
-  -webkit-appearance: none;
   appearance: none;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: #ffffff;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
-  border: 2px solid #9b8cff;
+  accent-color: #ffffff;
 }
 
-.sliderBadge {
+.searchQuotaBadge {
   font-size: 11px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.75);
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  padding: 3px 10px;
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 6px 14px;
   border-radius: 9999px;
+  backdrop-filter: blur(8px);
   white-space: nowrap;
 }
 
-/* Segmented Depth Switch */
-.accuracySegmented {
-  display: flex;
-  align-items: center;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 9999px;
-  padding: 3px;
-  gap: 2px;
-}
-
-.segmentBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 5px 12px;
-  border-radius: 9999px;
-  border: none;
-  background: transparent;
-  font-size: 12px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.65);
-  cursor: pointer;
-  transition: all 0.18s ease;
-}
-
-.segmentBtn:hover {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.segmentBtnActive {
-  background: #ffffff;
-  color: #000000 !important;
-  box-shadow: 0 2px 10px rgba(255, 255, 255, 0.25);
-}
 
 .spinnerSmall {
   width: 16px;
@@ -483,22 +566,28 @@
   z-index: 30;
   max-width: 1440px;
   width: 100%;
-  margin: 1rem auto 4rem;
-  padding: 0 1.5rem;
+  margin: 1.5rem auto 5rem;
+  padding: 0 2rem;
   animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (max-width: 768px) {
+  .resultsSectionFull {
+    padding: 0 1rem;
+  }
 }
 
 .dashboardLayout {
   display: grid;
   grid-template-columns: 420px 1fr;
-  gap: 2rem;
+  gap: 2.25rem;
   align-items: start;
 }
 
 @media (max-width: 1200px) {
   .dashboardLayout {
     grid-template-columns: 360px 1fr;
-    gap: 1.5rem;
+    gap: 1.75rem;
   }
 }
 
@@ -512,13 +601,13 @@
 .sidebarSticky {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1.5rem;
   position: sticky;
   top: 86px;
   max-height: calc(100vh - 100px);
   overflow-y: auto;
   overflow-x: hidden;
-  padding-right: 6px;
+  padding: 0.25rem 6px 2rem 0;
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
 }
@@ -542,23 +631,21 @@
 
 /* Video Card in Sidebar */
 .sidebarVideoCard {
-  background: rgba(18, 18, 22, 0.85);
-  backdrop-filter: blur(18px) saturate(140%);
-  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  background: rgba(10, 10, 14, 0.96);
   border-radius: 24px;
-  padding: 14px;
+  padding: 1.5rem;
   box-shadow: 0 18px 44px rgba(0, 0, 0, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .sidebarVideoHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   padding: 0 4px;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
 }
 
 .sidebarVideoTitle {
@@ -580,7 +667,7 @@
   text-decoration: none;
   background: rgba(155, 140, 255, 0.15);
   border: 1px solid rgba(155, 140, 255, 0.3);
-  padding: 3px 10px;
+  padding: 4px 12px;
   border-radius: 9999px;
   transition: all 0.2s;
   max-width: 180px;
@@ -611,15 +698,13 @@
   border: none;
 }
 
-/* Brand Ambassador Dog Mascot Card in Left Sidebar */
+/* Brand Ambassador Mascot Card — gradient-ring treatment */
 .mascotSidebarCard {
-  background: rgba(18, 18, 22, 0.85);
-  backdrop-filter: blur(18px) saturate(140%);
-  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  background: linear-gradient(160deg, rgba(30,30,40,0.95) 0%, rgba(10,10,14,0.98) 100%);
   border-radius: 24px;
-  padding: 1.5rem 1.25rem;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.55);
+  padding: 2rem 1.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255,255,255,0.05) inset;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -629,13 +714,25 @@
   transition: all 0.3s ease;
 }
 
+.mascotSidebarCard::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(155,140,255,0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
 .mascotSidebarImgWrapper {
   width: 100%;
   height: 200px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.85rem;
   position: relative;
 }
 
@@ -668,9 +765,9 @@
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  padding: 3px 12px;
+  padding: 4px 14px;
   border-radius: 9999px;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .mascotSidebarTitle {
@@ -685,16 +782,16 @@
   font-size: 12px;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.65);
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 .mascotSidebarFeedback {
   font-size: 13.5px;
-  color: rgba(255, 255, 255, 0.85);
-  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.88);
+  line-height: 1.6;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 14px;
-  padding: 10px 14px;
+  padding: 1.15rem 1.35rem;
   width: 100%;
   border: 1px solid rgba(255, 255, 255, 0.1);
   text-align: left;
@@ -704,27 +801,25 @@
 .placeholdersGrid {
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
+  gap: 1rem;
 }
 
 .placeholderCard {
-  background: rgba(18, 18, 22, 0.85);
-  backdrop-filter: blur(18px) saturate(140%);
-  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  background: rgba(255,255,255,0.04);
   border-radius: 20px;
-  padding: 1.15rem 1.25rem;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+  padding: 1.5rem 1.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(255,255,255,0.16);
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  transition: transform 0.2s, box-shadow 0.2s;
+  gap: 6px;
+  transition: all 0.2s;
 }
 
 .placeholderCard:hover {
   transform: translateY(-2px);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
-  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(155,140,255,0.07);
+  border-color: rgba(155,140,255,0.3);
 }
 
 .placeholderHeader {
@@ -746,23 +841,28 @@
   font-weight: 800;
   color: rgba(255, 255, 255, 0.55);
   background: rgba(255, 255, 255, 0.08);
-  padding: 2px 7px;
+  padding: 3px 8px;
   border-radius: 6px;
 }
 
 .placeholderValue {
-  font-size: 28px;
+  font-size: 30px;
   font-weight: 800;
   color: #9b8cff;
   font-family: var(--font-inter-family);
   line-height: 1.1;
-  margin: 4px 0;
+  margin: 6px 0;
 }
 
 .placeholderDesc {
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.65);
-  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.5;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  margin-top: 2px;
 }
 
 .placeholderMascotRow {
@@ -830,7 +930,8 @@
 .breakdownContainer {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.75rem;
+  padding: 0.25rem 0;
 }
 
 /* Error Banner */
@@ -900,7 +1001,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  padding: 1.5rem 2rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px;
   flex-wrap: wrap;
   gap: 1rem;
 }
@@ -915,14 +1020,14 @@
 
 .resultsMeta {
   display: flex;
-  gap: 0.6rem;
+  gap: 0.75rem;
   flex-wrap: wrap;
 }
 
 .metaBadge {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 5px 12px;
+  padding: 8px 16px;
   border-radius: 9999px;
   font-size: 12px;
   font-weight: 600;
@@ -989,7 +1094,7 @@
 .topRow {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.25rem;
+  gap: 1.5rem;
 }
 
 @media (max-width: 768px) {
@@ -999,21 +1104,35 @@
 }
 
 .card {
-  background: rgba(18, 18, 22, 0.85);
-  backdrop-filter: blur(18px) saturate(140%);
-  -webkit-backdrop-filter: blur(18px) saturate(140%);
-  border-radius: 22px;
-  padding: 1.5rem;
-  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.45);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(14, 14, 18, 0.92);
+  border-radius: 24px;
+  padding: 2.25rem;
+  box-shadow: 0 2px 0 rgba(255,255,255,0.06) inset, 0 14px 32px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   position: relative;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden;
+}
+
+@media (max-width: 640px) {
+  .card {
+    padding: 1.5rem;
+  }
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, transparent 60%);
+  pointer-events: none;
 }
 
 .card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6);
-  border-color: rgba(255, 255, 255, 0.22);
+  box-shadow: 0 2px 0 rgba(255,255,255,0.08) inset, 0 20px 44px rgba(0, 0, 0, 0.65);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .cardTitle {
@@ -1021,7 +1140,7 @@
   font-size: 18px;
   font-weight: 700;
   color: #ffffff;
-  margin-bottom: 0.75rem;
+  margin-bottom: 1.15rem;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1035,8 +1154,8 @@
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 20px;
-  padding: 12px 16px;
-  margin-bottom: 1.25rem;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .ratingMascotImgWrap {
@@ -1046,9 +1165,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  /* background: rgba(255, 255, 255, 0.08); */
-  /* border-radius: 16px; */
-  /* border: 1px solid rgba(255, 255, 255, 0.15); */
 }
 
 .ratingMascotImg {
@@ -1074,7 +1190,7 @@
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  padding: 3px 10px;
+  padding: 4px 12px;
   border-radius: 9999px;
   width: fit-content;
 }
@@ -1096,7 +1212,7 @@
 .ratingCardInner {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1.75rem;
 }
 
 @media (max-width: 500px) {
@@ -1155,9 +1271,13 @@
 }
 
 .ratingExplanation {
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 13.5px;
-  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 14px;
+  line-height: 1.65;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 1.15rem 1.35rem;
 }
 
 /* Sentiment Card */
@@ -1165,11 +1285,11 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 5px 14px;
+  padding: 8px 18px;
   border-radius: 9999px;
   font-weight: 700;
   font-size: 13px;
-  margin-bottom: 0.85rem;
+  margin-bottom: 1.25rem;
 }
 
 .sentiment_positive {
@@ -1197,7 +1317,11 @@
 }
 
 .meterContainer {
-  margin: 1rem 0;
+  margin: 1.25rem 0;
+  padding: 1.15rem 1.35rem;
+  background: rgba(255, 255, 255, 0.035);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
 }
 
 .meterLabels {
@@ -1206,7 +1330,7 @@
   font-size: 11px;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.6);
-  margin-bottom: 5px;
+  margin-bottom: 8px;
 }
 
 .meterTrack {
@@ -1224,10 +1348,10 @@
 }
 
 .commentsCountPill {
-  margin-top: 0.75rem;
+  margin-top: 1rem;
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  padding: 8px 14px;
+  border-radius: 14px;
+  padding: 12px 18px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -1246,16 +1370,20 @@
   font-weight: 500;
 }
 
-/* Scores Card */
+/* Scores Card — bento-style flat panels */
 .scoresCard {
   margin-bottom: 0;
+  background: rgba(10, 10, 14, 0.95);
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+  padding: 2.25rem;
 }
 
 .scoresGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.25rem;
-  margin-top: 0.75rem;
+  gap: 1.5rem;
+  margin-top: 1.25rem;
 }
 
 @media (max-width: 640px) {
@@ -1265,17 +1393,22 @@
 }
 
 .scoreItem {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  padding: 1.1rem;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 18px;
+  padding: 1.5rem 1.35rem;
+  transition: background 0.2s;
+}
+
+.scoreItem:hover {
+  background: rgba(255, 255, 255, 0.07);
 }
 
 .scoreHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .scoreInfo {
@@ -1298,7 +1431,7 @@
   background: rgba(255, 255, 255, 0.12);
   border-radius: 9999px;
   overflow: hidden;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .scoreBarFill {
@@ -1308,16 +1441,21 @@
 }
 
 .scoreExplanation {
-  font-size: 12.5px;
-  color: rgba(255, 255, 255, 0.65);
-  line-height: 1.5;
+  font-size: 13.5px;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.6;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin-top: 10px;
 }
 
 /* Bottom 2 Cards Grid */
 .bottomRow {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.25rem;
+  gap: 1.5rem;
 }
 
 @media (max-width: 640px) {
@@ -1327,13 +1465,26 @@
 }
 
 .cardText {
-  color: rgba(255, 255, 255, 0.75);
-  font-size: 13.5px;
-  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 14px;
+  line-height: 1.7;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  margin-top: 0.5rem;
 }
 
+/* Limitations card — left accent strip + tint */
 .limitationsCard {
   border-left: 4px solid #9b8cff;
+  background: rgba(155, 140, 255, 0.06);
+  box-shadow: none;
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+  border-radius: 0 20px 20px 0;
+  padding: 1.75rem 2rem;
 }
 
 /* ================= LACKING TOPICS & RELATED VIDEOS ================= */
@@ -1344,25 +1495,25 @@
 .topicList {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  margin-top: 1rem;
+  gap: 1.25rem;
+  margin-top: 1.25rem;
 }
 
 .topicCard {
-  background: rgba(18, 18, 22, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 18px;
-  padding: 1.25rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  padding: 1.6rem 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
-  transition: transform 0.2s, box-shadow 0.2s;
+  gap: 0.85rem;
+  transition: all 0.2s;
 }
 
 .topicCard:hover {
+  background: rgba(155, 140, 255, 0.06);
+  border-color: rgba(155, 140, 255, 0.3);
   transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.5);
-  border-color: rgba(255, 255, 255, 0.25);
 }
 
 .topicHeader {
@@ -1388,23 +1539,27 @@
   background: rgba(155, 140, 255, 0.18);
   color: #c4b5fd;
   border: 1px solid rgba(155, 140, 255, 0.3);
-  padding: 3px 10px;
+  padding: 4px 12px;
   border-radius: 9999px;
   text-transform: uppercase;
 }
 
 .topicReason {
   font-size: 13.5px;
-  color: rgba(255, 255, 255, 0.7);
-  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.82);
+  line-height: 1.6;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .topicVideoRecommendation {
-  margin-top: 0.25rem;
+  margin-top: 0.35rem;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 14px;
-  padding: 0.75rem 1rem;
+  border-radius: 16px;
+  padding: 1rem 1.25rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1416,7 +1571,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 600;
   color: #ffffff;
 }
@@ -1430,7 +1585,7 @@
   color: #000000;
   background: #ffffff;
   text-decoration: none;
-  padding: 6px 14px;
+  padding: 7px 16px;
   border-radius: 9999px;
   transition: all 0.2s;
   flex-shrink: 0;
@@ -1445,19 +1600,19 @@
 .relatedVideosGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1rem;
-  margin-top: 1rem;
+  gap: 1.25rem;
+  margin-top: 1.25rem;
 }
 
 .relatedVideoCard {
-  background: rgba(18, 18, 22, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 18px;
-  padding: 1.1rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 1.5rem 1.4rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 10px;
+  gap: 12px;
   text-decoration: none;
   color: inherit;
   transition: all 0.2s ease;
@@ -1465,8 +1620,9 @@
 
 .relatedVideoCard:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.5);
-  border-color: rgba(155, 140, 255, 0.35);
+  background: rgba(155, 140, 255, 0.07);
+  border-color: rgba(155, 140, 255, 0.4);
+  box-shadow: 0 0 20px rgba(155, 140, 255, 0.1);
 }
 
 .relatedVideoHeader {
@@ -1498,7 +1654,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: 8px;
+  padding-top: 10px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -1517,32 +1673,35 @@
   color: #9b8cff;
 }
 
-/* ================= GUIDANCE SECTION ================= */
+/* ================= GUIDANCE SECTION — solid left-accent editorial ================= */
 .guidanceCard {
-  background: rgba(18, 18, 22, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(22, 163, 74, 0.07);
+  border: 1px solid rgba(52, 211, 153, 0.22);
   border-left: 4px solid #34d399;
+  box-shadow: none;
+  border-radius: 0 24px 24px 0;
+  padding: 2rem 2.25rem;
 }
 
 .guidanceList {
   list-style: none;
   padding: 0;
-  margin: 0.75rem 0 0 0;
+  margin: 1rem 0 0 0;
   display: flex;
   flex-direction: column;
-  gap: 0.65rem;
+  gap: 0.85rem;
 }
 
 .guidanceItem {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: 12px;
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.85);
-  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.88);
+  line-height: 1.6;
   background: rgba(255, 255, 255, 0.05);
-  padding: 10px 14px;
-  border-radius: 12px;
+  padding: 14px 18px;
+  border-radius: 14px;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -1555,25 +1714,25 @@
 .guidanceObj {
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 0.75rem;
   margin-top: 0.5rem;
 }
 
 .guidanceSubItem {
   font-size: 13.5px;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.82);
   background: rgba(255, 255, 255, 0.04);
-  padding: 8px 12px;
-  border-radius: 10px;
+  padding: 12px 16px;
+  border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* ================= MODE OUTPUT SECTIONS ================= */
+/* ================= MODE OUTPUT SECTIONS — editorial ribbon header ================= */
 .modeOutputWrapper {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  margin-top: 0.5rem;
+  gap: 1.75rem;
+  margin-top: 0.75rem;
 }
 
 .modeOutputHeader {
@@ -1581,11 +1740,24 @@
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 10px;
-  padding: 0.85rem 1.25rem;
-  background: rgba(255, 255, 255, 0.05);
+  gap: 12px;
+  padding: 1.25rem 1.75rem;
+  background: linear-gradient(90deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 16px;
+  border-radius: 18px;
+  position: relative;
+  overflow: hidden;
+}
+
+.modeOutputHeader::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: #ffffff;
+  border-radius: 3px 0 0 3px;
 }
 
 .modeOutputTag {
@@ -1596,7 +1768,7 @@
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  padding: 4px 12px;
+  padding: 6px 16px;
   border-radius: 9999px;
   background: #ffffff;
   color: #000000;
@@ -1604,17 +1776,17 @@
 
 .modeOutputSub {
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.65);
+  color: rgba(255, 255, 255, 0.7);
   font-weight: 500;
 }
 
-/* Learner Mode Output */
+/* Learner Mode Output — gradient-bordered hero card */
 .learnerHeroCard {
-  background: rgba(18, 18, 22, 0.85);
-  border: 1.5px solid rgba(52, 211, 153, 0.35);
-  border-radius: 20px;
-  padding: 1.5rem;
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5);
+  background: linear-gradient(135deg, rgba(52,211,153,0.08) 0%, rgba(14,14,18,0.95) 60%);
+  border: 1.5px solid rgba(52, 211, 153, 0.4);
+  border-radius: 24px;
+  padding: 2rem 1.75rem;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(52,211,153,0.1) inset;
 }
 
 .learningScoreRow {
@@ -1653,8 +1825,8 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 18px;
-  border-radius: 16px;
+  padding: 12px 22px;
+  border-radius: 18px;
   font-weight: 700;
   font-size: 18px;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
@@ -1682,25 +1854,25 @@
 .importantTopicsGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 1rem;
-  margin-top: 1rem;
+  gap: 1.25rem;
+  margin-top: 1.25rem;
 }
 
 .importantTopicCard {
-  background: rgba(18, 18, 22, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 16px;
-  padding: 1.1rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  padding: 1.5rem 1.4rem;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  transition: transform 0.2s, box-shadow 0.2s;
+  gap: 8px;
+  transition: all 0.2s;
 }
 
 .importantTopicCard:hover {
+  background: rgba(52, 211, 153, 0.07);
+  border-color: rgba(52, 211, 153, 0.3);
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
-  border-color: rgba(255, 255, 255, 0.25);
 }
 
 .importantTopicHeader {
@@ -1726,16 +1898,21 @@
 
 .importantTopicDesc {
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.68);
-  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.72);
+  line-height: 1.55;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 10px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  margin-top: 4px;
 }
 
 /* Learner Takeaways List */
 .takeawaysList {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  margin-top: 1rem;
+  gap: 0.85rem;
+  margin-top: 1.25rem;
 }
 
 .takeawayItem {
@@ -1744,11 +1921,11 @@
   gap: 12px;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 14px;
-  padding: 12px 16px;
+  border-radius: 16px;
+  padding: 14px 18px;
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.85);
-  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.88);
+  line-height: 1.6;
 }
 
 .takeawayNum {
@@ -1770,7 +1947,7 @@
 .creatorTwoCol {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.25rem;
+  gap: 1.5rem;
 }
 
 @media (max-width: 840px) {
@@ -1780,20 +1957,26 @@
 }
 
 .likedCard {
-  background: rgba(18, 18, 22, 0.85);
-  border: 1px solid rgba(52, 211, 153, 0.3);
+  background: linear-gradient(135deg, rgba(52,211,153,0.09) 0%, rgba(14,14,18,0.95) 70%);
+  border: 1px solid rgba(52, 211, 153, 0.35);
+  border-radius: 24px;
+  padding: 2.25rem 2rem;
+  box-shadow: none;
 }
 
 .dislikedCard {
-  background: rgba(18, 18, 22, 0.85);
-  border: 1px solid rgba(248, 113, 113, 0.3);
+  background: linear-gradient(135deg, rgba(248,113,113,0.09) 0%, rgba(14,14,18,0.95) 70%);
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  border-radius: 24px;
+  padding: 2.25rem 2rem;
+  box-shadow: none;
 }
 
 .creatorFeedbackList {
   display: flex;
   flex-direction: column;
-  gap: 0.65rem;
-  margin-top: 0.85rem;
+  gap: 0.85rem;
+  margin-top: 1.15rem;
 }
 
 .likedItem {
@@ -1801,11 +1984,11 @@
   align-items: flex-start;
   gap: 10px;
   font-size: 13.5px;
-  color: rgba(255, 255, 255, 0.85);
-  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.88);
+  line-height: 1.6;
   background: rgba(52, 211, 153, 0.08);
-  padding: 10px 14px;
-  border-radius: 12px;
+  padding: 14px 18px;
+  border-radius: 14px;
   border: 1px solid rgba(52, 211, 153, 0.2);
 }
 
@@ -1814,11 +1997,11 @@
   align-items: flex-start;
   gap: 10px;
   font-size: 13.5px;
-  color: rgba(255, 255, 255, 0.85);
-  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.88);
+  line-height: 1.6;
   background: rgba(248, 113, 113, 0.08);
-  padding: 10px 14px;
-  border-radius: 12px;
+  padding: 14px 18px;
+  border-radius: 14px;
   border: 1px solid rgba(248, 113, 113, 0.2);
 }
 
@@ -1826,15 +2009,15 @@
 .trendingList {
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
-  margin-top: 1rem;
+  gap: 1rem;
+  margin-top: 1.25rem;
 }
 
 .trendingItem {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
-  padding: 1rem 1.25rem;
+  padding: 1.25rem 1.5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1844,9 +2027,10 @@
 }
 
 .trendingItemContentIdea {
-  background: rgba(155, 140, 255, 0.08);
-  border: 1.5px solid rgba(155, 140, 255, 0.35);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+  background: rgba(155, 140, 255, 0.1);
+  border: 1.5px solid rgba(155, 140, 255, 0.4);
+  box-shadow: 0 0 24px rgba(155, 140, 255, 0.12), 0 6px 18px rgba(0, 0, 0, 0.4);
+  border-radius: 16px;
 }
 
 .trendingTopicMain {
@@ -1881,7 +2065,7 @@
   background: rgba(155, 140, 255, 0.2);
   color: #c4b5fd;
   border: 1px solid rgba(155, 140, 255, 0.4);
-  padding: 4px 12px;
+  padding: 5px 14px;
   border-radius: 9999px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
@@ -1890,26 +2074,27 @@
 .sourceSuggestionsGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1rem;
-  margin-top: 1rem;
+  gap: 1.25rem;
+  margin-top: 1.25rem;
 }
 
 .sourceSuggestionCard {
-  background: rgba(18, 18, 22, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 16px;
-  padding: 1.15rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-top: 2px solid rgba(255,255,255,0.18);
+  border-radius: 18px;
+  padding: 1.5rem 1.4rem;
   display: flex;
   flex-direction: column;
   gap: 8px;
   position: relative;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: all 0.2s;
 }
 
 .sourceSuggestionCard:hover {
+  background: rgba(155,140,255,0.07);
+  border-color: rgba(155, 140, 255, 0.35);
   transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.5);
-  border-color: rgba(255, 255, 255, 0.25);
 }
 
 .sourceSuggestionTitle {
@@ -1921,16 +2106,33 @@
 
 .sourceSuggestionDesc {
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.65);
-  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.55;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 10px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-/* Watcher Summary Card */
+/* Watcher Summary Card — editorial flat ink treatment */
 .watcherSummaryCard {
-  background: rgba(18, 18, 22, 0.85);
-  border: 1.5px solid rgba(255, 255, 255, 0.15);
-  border-radius: 20px;
-  padding: 1.25rem 1.5rem;
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 2.25rem 2rem;
+  box-shadow: none;
+  border: none;
+}
+
+.watcherSummaryCard h3 {
+  color: #000000 !important;
+}
+
+.watcherSummaryCard .cardText {
+  color: rgba(0, 0, 0, 0.82) !important;
+  background: rgba(0, 0, 0, 0.04) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  padding: 1.25rem 1.5rem !important;
+  border-radius: 14px;
 }
 
 .watcherSummaryPill {
@@ -1939,12 +2141,12 @@
   gap: 6px;
   font-size: 12px;
   font-weight: 700;
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  padding: 4px 10px;
+  color: #000000;
+  background: rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  padding: 5px 12px;
   border-radius: 9999px;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.85rem;
 }
 
 /* Footer (Page level) */
